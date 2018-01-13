@@ -5,12 +5,14 @@
 # https://gcc.gnu.org/wiki/FAQ#configure
 # https://gcc.gnu.org/releases.html
 # https://gist.github.com/centminmod/f825b26676eab0240d3049d2e7d1c688
+# http://wiki.osdev.org/GCC_Cross-Compiler#Binutils
 ################################################
 DT=$(date +"%d%m%y-%H%M%S")
 
 GCC_SVN='y'
 GCC_VER='7.2.0'
 GCC_PREFIX="/opt/gcc-${GCC_VER}"
+BINUTILS_VER='2.29.1'
 
 DIR_TMP='/svr-setup'
 CENTMINLOGDIR='/root/centminlogs'
@@ -104,8 +106,48 @@ else
     MAKETHREADS=" -j$CPUS"
 fi
 
+binutils_install() {
+
+cd $DIR_TMP
+if [[ ! -f "binutils-${BINUTILS_VER}.tar.gz" || ! -d "binutils-${BINUTILS_VER}" ]]; then
+  wget -cnv "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.gz"
+  tar xvzf "binutils-${BINUTILS_VER}.tar.gz"
+fi
+    rm -rf gold.binutils
+    mkdir -p gold.binutils
+    cd gold.binutils
+    ../binutils-${BINUTILS_VER}/configure --prefix="$GCC_PREFIX" --enable-gold --enable-plugins --disable-nls --disable-werror
+    time make${MAKETHREADS} all-gold
+    time make${MAKETHREADS}
+    time make install
+    echo "${GCC_PREFIX}/bin/ld -v"
+    ${GCC_PREFIX}/bin/ld -v
+    echo "${GCC_PREFIX}/bin/ld.gold -v"
+    ${GCC_PREFIX}/bin/ld.gold -v
+    echo "${GCC_PREFIX}/bin/ld.bfd -v"
+    ${GCC_PREFIX}/bin/ld.bfd -v
+}
+
 sourcesetup() {
-    touch "${GCC_PREFIX}/enable"
+    echo "*************************************************"
+    cecho "* Setup ${GCC_PREFIX}/enable" $boldgreen
+    echo "*************************************************"
+    rm -rf "${GCC_PREFIX}/enable"
+cat > "${GCC_PREFIX}/enable" <<EOF
+export PATH=${GCC_PREFIX}/bin\${PATH:+:\${PATH}}
+export PCP_DIR=${GCC_PREFIX}
+rpmlibdir=${GCC_PREFIX}/lib64
+# bz1017604: On 64-bit hosts, we should include also the 32-bit library path.
+if [ "\$rpmlibdir" != "${GCC_PREFIX}/lib64" ]; then
+  rpmlibdir32=":${GCC_PREFIX}/lib"
+fi
+export LD_LIBRARY_PATH=\$rpmlibdir\$rpmlibdir32\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}
+EOF
+    echo
+    echo "*************************************************"
+    cecho "* Setup ${GCC_PREFIX}/enable completed" $boldgreen
+    echo "*************************************************"
+    echo
 }
 
 install_gcc() {
@@ -124,12 +166,17 @@ install_gcc() {
     done
 
     cd "$DIR_TMP"
-    if [[ "$GCC_SVN" = [nN]] ]; then
+    if [[ "$GCC_SVN" = [nN] ]]; then
         rm -rf "gcc-${GCC_VER}*"
         wget http://www.netgull.com/gcc/releases/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz
         tar xf gcc-${GCC_VER}.tar.xz
         cd "gcc-${GCC_VER}"
-    elif [[ "$GCC_SVN" = [yY]] ]; then
+        echo "mkdir -p test"
+        mkdir -p test
+        cd test
+        echo "../gcc-${GCC_VER}/configure --prefix=$GCC_PREFIX --disable-multilib"
+        ../gcc-${GCC_VER}/configure --prefix="$GCC_PREFIX" --disable-multilib
+    elif [[ "$GCC_SVN" = [yY] ]]; then
         downloadtar_name=$(curl -4s http://www.netgull.com/gcc/snapshots/LATEST-7/ | grep -o '<a .*href=.*>' | sed -e 's/<a /\n<a /g' | sed -e 's/<a .*href=['"'"'"]//' -e 's/["'"'"'].*$//' -e '/^$/ d' | awk -F "/" '/tar.xz/ {print $2}')
         downloadtar_dirname=$(echo "$downloadtar_name" | sed -e 's|.tar.xz||')
         rm -rf "${downloadtar_dirname}*"
@@ -138,12 +185,13 @@ install_gcc() {
         echo "tar xf ${downloadtar_name}"
         tar xf "${downloadtar_name}"
         cd "$downloadtar_dirname"
+        echo "mkdir -p test"
+        mkdir -p test
+        cd test
+        GCC_PREFIX="/opt/${downloadtar_dirname}"
+        echo "../configure --prefix=$GCC_PREFIX --disable-multilib"
+        ../configure --prefix="$GCC_PREFIX" --disable-multilib --disable-nls
     fi
-    echo "mkdir -p test"
-    mkdir -p test
-    cd test
-    echo "../gcc-${GCC_VER}/configure --prefix="$GCC_PREFIX""
-    ../gcc-${GCC_VER}/configure --prefix="$GCC_PREFIX"
     echo
     echo "time make${MAKETHREADS}"
     time make${MAKETHREADS}
@@ -151,6 +199,18 @@ install_gcc() {
     echo "time make install"
     time make install
     echo
+    sourcesetup
+    echo
+    echo "${GCC_PREFIX}/bin/ld -v"
+    "${GCC_PREFIX}/bin/ld -v"
+    echo "${GCC_PREFIX}/bin/ld.gold -v"
+    "${GCC_PREFIX}/bin/ld.gold -v"
+    echo "${GCC_PREFIX}/bin/ld.bfd -v"
+    "${GCC_PREFIX}/bin/ld.bfd -v"
+    echo "${GCC_PREFIX}/bin/gcc --version"
+    "${GCC_PREFIX}/bin/gcc --version"
+    echo "${GCC_PREFIX}/bin/g++ --version"
+    "${GCC_PREFIX}/bin/g++ --version"
 
     echo "*************************************************"
     cecho "* Compile GCC Completed" $boldgreen
@@ -161,9 +221,15 @@ install_gcc() {
 case "$1" in
     install )
         {
+            starttime=$(TZ=UTC date +%s.%N)
+            binutils_install
             install_gcc
             # postfixsetup
-        } 2>&1 | tee ${CENTMINLOGDIR}/tools-postfix-resetup_${DT}.log
+        } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install_${DT}.log"
+            endtime=$(TZ=UTC date +%s.%N)
+            INSTALLTIME=$(echo "scale=2;$endtime - $starttime"|bc )
+            echo "" >> "${CENTMINLOGDIR}/tools-gcc-install_${DT}.log"
+            echo "Total Binutils + GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install_${DT}.log"
         ;;
     * )
         echo "Usage:"
