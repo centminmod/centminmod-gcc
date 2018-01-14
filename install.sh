@@ -16,11 +16,12 @@ GCC_VER='7.2.0'
 GCC_PREFIX="/opt/gcc-${GCC_VER}"
 BINUTILS_VER='2.29.1'
 
+CCACHE='n'
 DIR_TMP='/svr-setup'
 CENTMINLOGDIR='/root/centminlogs'
 GCC_SNAPSHOTSEVEN='http://www.netgull.com/gcc/snapshots/LATEST-7/'
 GCC_SNAPSHOTEIGHT='http://www.netgull.com/gcc/snapshots/LATEST-8/'
-GCC_COMPILEOPTS='--disable-nls --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++,objc,obj-c++,java,fortran,ada,go,lto --enable-initfini-array --disable-libgcj --enable-gnu-indirect-function --with-tune=generic --build=x86_64-redhat-linux'
+GCC_COMPILEOPTS='--disable-nls --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++ --enable-initfini-array --disable-libgcj --enable-gnu-indirect-function --with-tune=generic --build=x86_64-redhat-linux'
 ################################################
 # Setup Colours
 black='\E[30;40m'
@@ -171,7 +172,7 @@ install_gcc() {
     echo "*************************************************"
     echo
 
-    pkgs='flex-devel gmp-devel mpfr-devel libmpc-devel bison-devel gcc-gnat'
+    pkgs='texinfo flex-devel gmp-devel mpfr-devel libmpc-devel bison-devel gcc-gnat'
     for i in ${pkgs[@]}; do 
      echo $i; 
      if [[ "$(rpm --quiet -ql $i; echo $?)" -ne '0' ]]; then
@@ -194,7 +195,7 @@ install_gcc() {
         GCC_SYMLINK='/opt/gcc7'
         downloadtar_name=$(curl -4s $GCC_SNAPSHOTSEVEN | grep -o '<a .*href=.*>' | sed -e 's/<a /\n<a /g' | sed -e 's/<a .*href=['"'"'"]//' -e 's/["'"'"'].*$//' -e '/^$/ d' | awk -F "/" '/tar.xz/ {print $2}')
         downloadtar_dirname=$(echo "$downloadtar_name" | sed -e 's|.tar.xz||')
-        rm -rf "${downloadtar_dirname}*"
+        rm -rf "${downloadtar_dirname}"
         echo "wget "$GCC_SNAPSHOTSEVEN/${downloadtar_name}""
         wget "$GCC_SNAPSHOTSEVEN/${downloadtar_name}"
         echo "tar xf ${downloadtar_name}"
@@ -210,7 +211,7 @@ install_gcc() {
         GCC_SYMLINK='/opt/gcc8'
         downloadtar_name=$(curl -4s $GCC_SNAPSHOTEIGHT | grep -o '<a .*href=.*>' | sed -e 's/<a /\n<a /g' | sed -e 's/<a .*href=['"'"'"]//' -e 's/["'"'"'].*$//' -e '/^$/ d' | awk -F "/" '/tar.xz/ {print $2}')
         downloadtar_dirname=$(echo "$downloadtar_name" | sed -e 's|.tar.xz||')
-        rm -rf "${downloadtar_dirname}*"
+        rm -rf "${downloadtar_dirname}"
         echo "wget "$GCC_SNAPSHOTEIGHT/${downloadtar_name}""
         wget "$GCC_SNAPSHOTEIGHT/${downloadtar_name}"
         echo "tar xf ${downloadtar_name}"
@@ -221,8 +222,10 @@ install_gcc() {
         mkdir -p test
         cd test
         GCC_PREFIX="/opt/${downloadtar_dirname}"
-        export CC="gcc"
-        export CXX="g++"
+        if [[ "$CCACHE" != [yY] ]]; then
+            export CC="gcc"
+            export CXX="g++"
+        fi
         echo "../configure --prefix=$GCC_PREFIX --disable-multilib $GCC_COMPILEOPTS"
         ../configure --prefix="$GCC_PREFIX" --disable-multilib $GCC_COMPILEOPTS
     fi
