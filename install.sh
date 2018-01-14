@@ -9,6 +9,8 @@
 ################################################
 DT=$(date +"%d%m%y-%H%M%S")
 
+# SVN GCC 7 or 8
+GCCSVN_VER='8'
 GCC_SVN='y'
 GCC_VER='7.2.0'
 GCC_PREFIX="/opt/gcc-${GCC_VER}"
@@ -18,6 +20,7 @@ DIR_TMP='/svr-setup'
 CENTMINLOGDIR='/root/centminlogs'
 GCC_SNAPSHOTSEVEN='http://www.netgull.com/gcc/snapshots/LATEST-7/'
 GCC_SNAPSHOTEIGHT='http://www.netgull.com/gcc/snapshots/LATEST-8/'
+GCC_COMPILEOPTS='--disable-nls --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++,objc,obj-c++,java,fortran,ada,go,lto --enable-initfini-array --disable-libgcj --enable-gnu-indirect-function --with-tune=generic --build=x86_64-redhat-linux'
 ################################################
 # Setup Colours
 black='\E[30;40m'
@@ -107,12 +110,23 @@ else
 fi
 
 binutils_install() {
+    if [[ "$GCC_SVN" = [yY] && "$GCCSVN_VER" -eq '7' ]]; then
+        GCC_SYMLINK='/opt/gcc7'
+        downloadtar_name=$(curl -4s $GCC_SNAPSHOTSEVEN | grep -o '<a .*href=.*>' | sed -e 's/<a /\n<a /g' | sed -e 's/<a .*href=['"'"'"]//' -e 's/["'"'"'].*$//' -e '/^$/ d' | awk -F "/" '/tar.xz/ {print $2}')
+        downloadtar_dirname=$(echo "$downloadtar_name" | sed -e 's|.tar.xz||')
+        GCC_PREFIX="/opt/${downloadtar_dirname}"
+    elif [[ "$GCC_SVN" = [yY] && "$GCCSVN_VER" -eq '8' ]]; then
+        GCC_SYMLINK='/opt/gcc8'
+        downloadtar_name=$(curl -4s $GCC_SNAPSHOTEIGHT | grep -o '<a .*href=.*>' | sed -e 's/<a /\n<a /g' | sed -e 's/<a .*href=['"'"'"]//' -e 's/["'"'"'].*$//' -e '/^$/ d' | awk -F "/" '/tar.xz/ {print $2}')
+        downloadtar_dirname=$(echo "$downloadtar_name" | sed -e 's|.tar.xz||')
+        GCC_PREFIX="/opt/${downloadtar_dirname}"
+    fi
 
-cd $DIR_TMP
-if [[ ! -f "binutils-${BINUTILS_VER}.tar.gz" || ! -d "binutils-${BINUTILS_VER}" ]]; then
-  wget -cnv "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.gz"
-  tar xvzf "binutils-${BINUTILS_VER}.tar.gz"
-fi
+    cd $DIR_TMP
+    if [[ ! -f "binutils-${BINUTILS_VER}.tar.gz" || ! -d "binutils-${BINUTILS_VER}" ]]; then
+        wget -cnv "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.gz"
+        tar xvzf "binutils-${BINUTILS_VER}.tar.gz"
+    fi
     rm -rf gold.binutils
     mkdir -p gold.binutils
     cd gold.binutils
@@ -157,7 +171,7 @@ install_gcc() {
     echo "*************************************************"
     echo
 
-    pkgs='gmp-devel mpfr-devel libmpc-devel'
+    pkgs='flex-devel gmp-devel mpfr-devel libmpc-devel bison-devel gcc-gnat'
     for i in ${pkgs[@]}; do 
      echo $i; 
      if [[ "$(rpm --quiet -ql $i; echo $?)" -ne '0' ]]; then
@@ -174,10 +188,11 @@ install_gcc() {
         echo "mkdir -p test"
         mkdir -p test
         cd test
-        echo "../gcc-${GCC_VER}/configure --prefix=$GCC_PREFIX --disable-multilib"
-        ../gcc-${GCC_VER}/configure --prefix="$GCC_PREFIX" --disable-multilib
-    elif [[ "$GCC_SVN" = [yY] ]]; then
-        downloadtar_name=$(curl -4s http://www.netgull.com/gcc/snapshots/LATEST-7/ | grep -o '<a .*href=.*>' | sed -e 's/<a /\n<a /g' | sed -e 's/<a .*href=['"'"'"]//' -e 's/["'"'"'].*$//' -e '/^$/ d' | awk -F "/" '/tar.xz/ {print $2}')
+        echo "../gcc-${GCC_VER}/configure --prefix=$GCC_PREFIX --disable-multilib $GCC_COMPILEOPTS"
+        ../gcc-${GCC_VER}/configure --prefix="$GCC_PREFIX" --disable-multilib $GCC_COMPILEOPTS
+    elif [[ "$GCC_SVN" = [yY] && "$GCCSVN_VER" -eq '7' ]]; then
+        GCC_SYMLINK='/opt/gcc7'
+        downloadtar_name=$(curl -4s $GCC_SNAPSHOTSEVEN | grep -o '<a .*href=.*>' | sed -e 's/<a /\n<a /g' | sed -e 's/<a .*href=['"'"'"]//' -e 's/["'"'"'].*$//' -e '/^$/ d' | awk -F "/" '/tar.xz/ {print $2}')
         downloadtar_dirname=$(echo "$downloadtar_name" | sed -e 's|.tar.xz||')
         rm -rf "${downloadtar_dirname}*"
         echo "wget "$GCC_SNAPSHOTSEVEN/${downloadtar_name}""
@@ -189,8 +204,27 @@ install_gcc() {
         mkdir -p test
         cd test
         GCC_PREFIX="/opt/${downloadtar_dirname}"
-        echo "../configure --prefix=$GCC_PREFIX --disable-multilib"
-        ../configure --prefix="$GCC_PREFIX" --disable-multilib --disable-nls
+        echo "../configure --prefix=$GCC_PREFIX --disable-multilib $GCC_COMPILEOPTS"
+        ../configure --prefix="$GCC_PREFIX" --disable-multilib $GCC_COMPILEOPTS
+    elif [[ "$GCC_SVN" = [yY] && "$GCCSVN_VER" -eq '8' ]]; then
+        GCC_SYMLINK='/opt/gcc8'
+        downloadtar_name=$(curl -4s $GCC_SNAPSHOTEIGHT | grep -o '<a .*href=.*>' | sed -e 's/<a /\n<a /g' | sed -e 's/<a .*href=['"'"'"]//' -e 's/["'"'"'].*$//' -e '/^$/ d' | awk -F "/" '/tar.xz/ {print $2}')
+        downloadtar_dirname=$(echo "$downloadtar_name" | sed -e 's|.tar.xz||')
+        rm -rf "${downloadtar_dirname}*"
+        echo "wget "$GCC_SNAPSHOTEIGHT/${downloadtar_name}""
+        wget "$GCC_SNAPSHOTEIGHT/${downloadtar_name}"
+        echo "tar xf ${downloadtar_name}"
+        tar xf "${downloadtar_name}"
+        cd "$downloadtar_dirname"
+        ./contrib/download_prerequisites
+        echo "mkdir -p test"
+        mkdir -p test
+        cd test
+        GCC_PREFIX="/opt/${downloadtar_dirname}"
+        export CC="gcc"
+        export CXX="g++"
+        echo "../configure --prefix=$GCC_PREFIX --disable-multilib $GCC_COMPILEOPTS"
+        ../configure --prefix="$GCC_PREFIX" --disable-multilib $GCC_COMPILEOPTS
     fi
     echo
     echo "time make${MAKETHREADS}"
@@ -198,19 +232,53 @@ install_gcc() {
     echo
     echo "time make install"
     time make install
+    errcheck=$?
+    if [[ "$errcheck" -eq '0' ]]; then
+        cd "$GCC_PREFIX"
+        rm -rf "$GCC_SYMLINK"
+        ln -s "$GCC_PREFIX" "$GCC_SYMLINK"
+    fi
     echo
-    sourcesetup
+
+    echo "*************************************************"
+    cecho "* Setup ${GCC_PREFIX}/enable" $boldgreen
+    echo "*************************************************"
+    rm -rf "${GCC_PREFIX}/enable"
+cat > "${GCC_PREFIX}/enable" <<EOF
+export PATH=${GCC_PREFIX}/bin\${PATH:+:\${PATH}}
+export PCP_DIR=${GCC_PREFIX}
+rpmlibdir=${GCC_PREFIX}/lib64
+# bz1017604: On 64-bit hosts, we should include also the 32-bit library path.
+if [ "\$rpmlibdir" != "${GCC_PREFIX}/lib64" ]; then
+  rpmlibdir32=":${GCC_PREFIX}/lib"
+fi
+export LD_LIBRARY_PATH=\$rpmlibdir\$rpmlibdir32\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}
+EOF
+    echo
+    echo "*************************************************"
+    cecho "* Setup ${GCC_PREFIX}/enable completed" $boldgreen
+    echo "*************************************************"
+    echo
+
     echo
     echo "${GCC_PREFIX}/bin/ld -v"
-    "${GCC_PREFIX}/bin/ld -v"
+    "${GCC_PREFIX}/bin/ld" -v
+
+    echo
     echo "${GCC_PREFIX}/bin/ld.gold -v"
-    "${GCC_PREFIX}/bin/ld.gold -v"
+    "${GCC_PREFIX}/bin/ld.gold" -v
+
+    echo
     echo "${GCC_PREFIX}/bin/ld.bfd -v"
-    "${GCC_PREFIX}/bin/ld.bfd -v"
+    "${GCC_PREFIX}/bin/ld.bfd" -v
+
+    echo
     echo "${GCC_PREFIX}/bin/gcc --version"
-    "${GCC_PREFIX}/bin/gcc --version"
+    "${GCC_PREFIX}/bin/gcc" --version
+
+    echo
     echo "${GCC_PREFIX}/bin/g++ --version"
-    "${GCC_PREFIX}/bin/g++ --version"
+    "${GCC_PREFIX}/bin/g++" --version
 
     echo "*************************************************"
     cecho "* Compile GCC Completed" $boldgreen
@@ -220,8 +288,12 @@ install_gcc() {
 #########################
 case "$1" in
     install )
-        {
             starttime=$(TZ=UTC date +%s.%N)
+        {
+
+            if [[ -f /opt/rh/devtoolset-7/root/usr/bin/gcc && -f /opt/rh/devtoolset-7/root/usr/bin/g++ ]]; then
+                source /opt/rh/devtoolset-7/enable
+            fi
             binutils_install
             install_gcc
             # postfixsetup
