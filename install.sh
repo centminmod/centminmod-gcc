@@ -237,7 +237,7 @@ install_gcc() {
     if [[ -f /opt/rh/devtoolset-7/root/usr/bin/gcc && -f /opt/rh/devtoolset-7/root/usr/bin/g++ ]]; then
         GCCSEVEN='y'
         source /opt/rh/devtoolset-7/enable
-        GCCCFLAGS="${OPT_LEVEL}"
+        GCCCFLAGS="'${OPT_LEVEL}'"
         # export CXXFLAGS="${CFLAGS}"
         GCC_COMPILEOPTS="$GCC_COMPILEOPTS --enable-lto --enable-gold"
     fi
@@ -272,7 +272,7 @@ install_gcc() {
         downloadtar_name=$(curl -4s $GCC_SNAPSHOTSEVEN | grep -o '<a .*href=.*>' | sed -e 's/<a /\n<a /g' | sed -e 's/<a .*href=['"'"'"]//' -e 's/["'"'"'].*$//' -e '/^$/ d' | awk -F "/" '/tar.xz/ {print $2}')
         downloadtar_dirname=$(echo "$downloadtar_name" | sed -e 's|.tar.xz||')
         rm -rf "${downloadtar_dirname}"
-        rm -rf $"{downloadtar_name}"
+        rm -rf "${downloadtar_name}"
         echo "wget "$GCC_SNAPSHOTSEVEN/${downloadtar_name}""
         wget "$GCC_SNAPSHOTSEVEN/${downloadtar_name}"
         echo "tar xf ${downloadtar_name}"
@@ -294,7 +294,7 @@ install_gcc() {
         downloadtar_name=$(curl -4s $GCC_SNAPSHOTEIGHT | grep -o '<a .*href=.*>' | sed -e 's/<a /\n<a /g' | sed -e 's/<a .*href=['"'"'"]//' -e 's/["'"'"'].*$//' -e '/^$/ d' | awk -F "/" '/tar.xz/ {print $2}')
         downloadtar_dirname=$(echo "$downloadtar_name" | sed -e 's|.tar.xz||')
         rm -rf "${downloadtar_dirname}"
-        rm -rf $"{downloadtar_name}"
+        rm -rf "${downloadtar_name}"
         echo "wget "$GCC_SNAPSHOTEIGHT/${downloadtar_name}""
         wget "$GCC_SNAPSHOTEIGHT/${downloadtar_name}"
         echo "tar xf ${downloadtar_name}"
@@ -346,8 +346,22 @@ install_gcc() {
         else
             FPMCOMPRESS_OPT='--rpm-compression gzip'
         fi
-        echo "fpm -s dir -t rpm -n gcc-all -v $GCCFPM_VER $FPMCOMPRESS_OPT -C /home/fpmtmp/gcc_installdir"
-        time fpm -s dir -t rpm -n gcc-all -v $GCCFPM_VER $FPMCOMPRESS_OPT -C /home/fpmtmp/gcc_installdir
+cat > symlink.sh <<EOF
+#!/bin/bash
+if [[ -L "$GCC_SYMLINK" ]]; then
+  rm -rf "$GCC_SYMLINK" && ln -s "$GCC_PREFIX" "$GCC_SYMLINK"
+fi
+EOF
+        chmod +x symlink.sh
+cat > remove_symlink.sh <<EOF
+#!/bin/bash
+if [[ -L "$GCC_SYMLINK" ]]; then
+  rm -rf "$GCC_SYMLINK"
+fi
+EOF
+        chmod +x remove_symlink.sh
+        echo "fpm -s dir -t rpm -n gcc-all -v $GCCFPM_VER $FPMCOMPRESS_OPT --after-install symlink.sh --before-remove remove_symlink.sh -C /home/fpmtmp/gcc_installdir"
+        time fpm -s dir -t rpm -n gcc-all -v $GCCFPM_VER $FPMCOMPRESS_OPT --after-install symlink.sh --before-remove remove_symlink.sh -C /home/fpmtmp/gcc_installdir
         echo
         GCCRPM_PATH="$(pwd)/gcc-all-${GCCFPM_VER}-1.x86_64.rpm"
         ls -lah "$GCCRPM_PATH"
