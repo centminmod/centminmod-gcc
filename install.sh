@@ -15,6 +15,8 @@ GCCSVN_VER='8'
 GCC_SVN='y'
 GCC_VER='7.2.0'
 GCC_PREFIX="/opt/gcc-${GCC_VER}"
+GCC_LTO='y'
+GCC_GOLD='y'
 # Profile Guided Optimiized GCC build
 # using profiledbootstrap
 # https://gcc.gnu.org/install/build.html
@@ -67,8 +69,22 @@ CENTOSVER=$(awk '{ print $3 }' /etc/redhat-release)
 
 if [[ "$GCC_PGO" = [yY] ]]; then
     PGOTAG='-pgo'
+    BOOTCFLAGS='y'
 else
     PGOTAG=""
+    BOOTCFLAGS='n'
+fi
+
+if [[ "$GCC_LTO" = [yY] ]]; then
+    LTO_OPT=' --enable-lto'
+else
+    LTO_OPT=""
+fi
+
+if [[ "$GCC_GOLD" = [yY] ]]; then
+    GOLD_OPT=' --enable-gold'
+else
+    GOLD_OPT=""
 fi
 
 if [ "$CENTOSVER" == 'release' ]; then
@@ -238,9 +254,9 @@ install_gcc() {
     if [[ -f /opt/rh/devtoolset-7/root/usr/bin/gcc && -f /opt/rh/devtoolset-7/root/usr/bin/g++ ]]; then
         GCCSEVEN='y'
         source /opt/rh/devtoolset-7/enable
-        GCCCFLAGS="'${OPT_LEVEL}'"
+        GCCCFLAGS="'${OPT_LEVEL} -Wno-maybe-uninitialized'"
         # export CXXFLAGS="${CFLAGS}"
-        GCC_COMPILEOPTS="$GCC_COMPILEOPTS --enable-lto --enable-gold"
+        GCC_COMPILEOPTS="${GCC_COMPILEOPTS}${LTO_OPT}${GOLD_OPT}"
     fi
 
     echo "*************************************************"
@@ -316,16 +332,16 @@ install_gcc() {
     echo
     if [[ "$GCC_PGO" = [yY] ]]; then
         if [[ "$BOOTCFLAGS" = [yY] && "$GCCSEVEN" = [Yy] ]]; then
-            echo "time make BOOT_CFLAGS=$GCCCFLAGS ${MAKETHREADS} profiledbootstrap"
-            time make BOOT_CFLAGS=$GCCCFLAGS ${MAKETHREADS} profiledbootstrap
+            echo "time make BOOT_CFLAGS=${GCCCFLAGS}${MAKETHREADS} profiledbootstrap"
+            time make BOOT_CFLAGS=${GCCCFLAGS}${MAKETHREADS} profiledbootstrap
         else
             echo "time make${MAKETHREADS} profiledbootstrap"
             time make${MAKETHREADS} profiledbootstrap
         fi
     else
         if [[ "$BOOTCFLAGS" = [yY] && "$GCCSEVEN" = [Yy] ]]; then
-            echo "time make BOOT_CFLAGS=$GCCCFLAGS ${MAKETHREADS}"
-            time make BOOT_CFLAGS=$GCCCFLAGS ${MAKETHREADS}
+            echo "time make BOOT_CFLAGS=${GCCCFLAGS}${MAKETHREADS}"
+            time make BOOT_CFLAGS=${GCCCFLAGS}${MAKETHREADS}
         else
             echo "time make${MAKETHREADS}"
             time make${MAKETHREADS}
@@ -448,6 +464,7 @@ case "$1" in
             INSTALLTIME=$(echo "scale=2;$endtime - $starttime"|bc )
             echo "" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             echo "Total Binutils + GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            tail -2 "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
         ;;
     installgcc )
             starttime=$(TZ=UTC date +%s.%N)
@@ -460,6 +477,7 @@ case "$1" in
             INSTALLTIME=$(echo "scale=2;$endtime - $starttime"|bc )
             echo "" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             echo "Total GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            tail -2 "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
         ;;
     * )
         echo "Usage:"
