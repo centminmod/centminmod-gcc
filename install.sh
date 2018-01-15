@@ -19,9 +19,10 @@ GCC_PREFIX="/opt/gcc-${GCC_VER}"
 # using profiledbootstrap
 # https://gcc.gnu.org/install/build.html
 GCC_PGO='n'
+BOOTCFLAGS='n'
 BINUTILS_VER='2.29.1'
 
-OPT_LEVEL='-O2'
+OPT_LEVEL=-O2
 CCACHE='y'
 DIR_TMP='/svr-setup'
 CENTMINLOGDIR='/root/centminlogs'
@@ -314,17 +315,17 @@ install_gcc() {
     fi
     echo
     if [[ "$GCC_PGO" = [yY] ]]; then
-        if [[ "$GCCSEVEN" = [Yy] ]]; then
-            echo "time make BOOT_CFLAGS="$GCCCFLAGS" ${MAKETHREADS} profiledbootstrap"
-            time make BOOT_CFLAGS="$GCCCFLAGS" ${MAKETHREADS} profiledbootstrap
+        if [[ "$BOOTCFLAGS" = [yY] && "$GCCSEVEN" = [Yy] ]]; then
+            echo "time make BOOT_CFLAGS=$GCCCFLAGS ${MAKETHREADS} profiledbootstrap"
+            time make BOOT_CFLAGS=$GCCCFLAGS ${MAKETHREADS} profiledbootstrap
         else
             echo "time make${MAKETHREADS} profiledbootstrap"
             time make${MAKETHREADS} profiledbootstrap
         fi
     else
-        if [[ "$GCCSEVEN" = [Yy] ]]; then
-            echo "time make BOOT_CFLAGS="$GCCCFLAGS" ${MAKETHREADS}"
-            time make BOOT_CFLAGS="$GCCCFLAGS" ${MAKETHREADS}
+        if [[ "$BOOTCFLAGS" = [yY] && "$GCCSEVEN" = [Yy] ]]; then
+            echo "time make BOOT_CFLAGS=$GCCCFLAGS ${MAKETHREADS}"
+            time make BOOT_CFLAGS=$GCCCFLAGS ${MAKETHREADS}
         else
             echo "time make${MAKETHREADS}"
             time make${MAKETHREADS}
@@ -447,6 +448,18 @@ case "$1" in
             INSTALLTIME=$(echo "scale=2;$endtime - $starttime"|bc )
             echo "" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             echo "Total Binutils + GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+        ;;
+    installgcc )
+            starttime=$(TZ=UTC date +%s.%N)
+        {
+            fpm_install
+            install_gcc
+            # postfixsetup
+        } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            endtime=$(TZ=UTC date +%s.%N)
+            INSTALLTIME=$(echo "scale=2;$endtime - $starttime"|bc )
+            echo "" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            echo "Total GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
         ;;
     * )
         echo "Usage:"
