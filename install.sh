@@ -15,8 +15,13 @@ GCCSVN_VER='8'
 GCC_SVN='y'
 GCC_VER='7.2.0'
 GCC_PREFIX="/opt/gcc-${GCC_VER}"
+# Profile Guided Optimiized GCC build
+# using profiledbootstrap
+# https://gcc.gnu.org/install/build.html
+GCC_PGO='y'
 BINUTILS_VER='2.29.1'
 
+OPT_LEVEL='-O2'
 CCACHE='y'
 DIR_TMP='/svr-setup'
 CENTMINLOGDIR='/root/centminlogs'
@@ -58,6 +63,12 @@ return
 
 ################################################
 CENTOSVER=$(awk '{ print $3 }' /etc/redhat-release)
+
+if [[ "$GCC_PGO" = [yY] ]]; then
+    PGOTAG='-pgo'
+else
+    PGOTAG=""
+fi
 
 if [ "$CENTOSVER" == 'release' ]; then
     CENTOSVER=$(awk '{ print $4 }' /etc/redhat-release | cut -d . -f1,2)
@@ -115,7 +126,7 @@ fpm_install() {
     if [[ "$BUILTRPM" = [Yy] ]]; then
         if [ ! -f /usr/local/bin/fpm ]; then
         echo "*************************************************"
-        cecho "* Install FPM Start..." $boldgreen
+        cecho "Install FPM Start..." $boldgreen
         echo "*************************************************"
         echo
         
@@ -129,7 +140,7 @@ fpm_install() {
             gem install --no-ri --no-rdoc fpm
 
         echo "*************************************************"
-        cecho "* Install FPM Completed" $boldgreen
+        cecho "Install FPM Completed" $boldgreen
         echo "*************************************************"
         echo
         fi
@@ -137,6 +148,13 @@ fpm_install() {
 }
 
 binutils_install() {
+
+    if [[ -f /opt/rh/devtoolset-7/root/usr/bin/gcc && -f /opt/rh/devtoolset-7/root/usr/bin/g++ ]]; then
+        source /opt/rh/devtoolset-7/enable
+        # export CFLAGS="${OPT_LEVEL} -pipe -fomit-frame-pointer"
+        # export CXXFLAGS="${CFLAGS}"
+    fi
+
     if [[ "$GCC_SVN" = [yY] && "$GCCSVN_VER" -eq '7' ]]; then
         GCC_SYMLINK='/opt/gcc7'
         downloadtar_name=$(curl -4s $GCC_SNAPSHOTSEVEN | grep -o '<a .*href=.*>' | sed -e 's/<a /\n<a /g' | sed -e 's/<a .*href=['"'"'"]//' -e 's/["'"'"'].*$//' -e '/^$/ d' | awk -F "/" '/tar.xz/ {print $2}')
@@ -168,10 +186,16 @@ binutils_install() {
         mkdir -p /home/fpmtmp/binutils_installdir
         echo "time make install DESTDIR=/home/fpmtmp/binutils_installdir"
         time make install DESTDIR=/home/fpmtmp/binutils_installdir
-        echo "fpm -s dir -t rpm -n binutils-custom -v $BINUTILS_VER -C /home/fpmtmp/binutils_installdir"
-        time fpm -s dir -t rpm -n binutils-custom -v $BINUTILS_VER -C /home/fpmtmp/binutils_installdir
+        if [ -f /usr/bin/xz ]; then
+            FPMCOMPRESS_OPT='--rpm-compression xz'
+        else
+            FPMCOMPRESS_OPT='--rpm-compression gzip'
+        fi
+        echo "fpm -s dir -t rpm -n binutils-custom -v $BINUTILS_VER $FPMCOMPRESS_OPT -C /home/fpmtmp/binutils_installdir"
+        time fpm -s dir -t rpm -n binutils-custom -v $BINUTILS_VER $FPMCOMPRESS_OPT -C /home/fpmtmp/binutils_installdir
         echo
-        ls -lah binutils-custom-${BINUTILS_VER}-1.x86_64.rpm
+        BINUTIL_RPMPATH="$(pwd)/binutils-custom-${BINUTILS_VER}-1.x86_64.rpm"
+        ls -lah "$BINUTIL_RPMPATH"
         echo
         echo "yum -y localinstall binutils-custom-${BINUTILS_VER}-1.x86_64.rpm"
         yum -y localinstall binutils-custom-${BINUTILS_VER}-1.x86_64.rpm
@@ -188,7 +212,7 @@ binutils_install() {
 
 sourcesetup() {
     echo "*************************************************"
-    cecho "* Setup ${GCC_PREFIX}/enable" $boldgreen
+    cecho "Setup ${GCC_PREFIX}/enable" $boldgreen
     echo "*************************************************"
     rm -rf "${GCC_PREFIX}/enable"
 cat > "${GCC_PREFIX}/enable" <<EOF
@@ -203,15 +227,23 @@ export LD_LIBRARY_PATH=\$rpmlibdir\$rpmlibdir32\${LD_LIBRARY_PATH:+:\${LD_LIBRAR
 EOF
     echo
     echo "*************************************************"
-    cecho "* Setup ${GCC_PREFIX}/enable completed" $boldgreen
+    cecho "Setup ${GCC_PREFIX}/enable completed" $boldgreen
     echo "*************************************************"
     echo
 }
 
 install_gcc() {
 
+    if [[ -f /opt/rh/devtoolset-7/root/usr/bin/gcc && -f /opt/rh/devtoolset-7/root/usr/bin/g++ ]]; then
+        GCCSEVEN='y'
+        source /opt/rh/devtoolset-7/enable
+        GCCCFLAGS="${OPT_LEVEL}"
+        # export CXXFLAGS="${CFLAGS}"
+        GCC_COMPILEOPTS="$GCC_COMPILEOPTS --enable-gold"
+    fi
+
     echo "*************************************************"
-    cecho "* Compile GCC Start..." $boldgreen
+    cecho "Compile GCC Start..." $boldgreen
     echo "*************************************************"
     echo
 
@@ -240,6 +272,7 @@ install_gcc() {
         downloadtar_name=$(curl -4s $GCC_SNAPSHOTSEVEN | grep -o '<a .*href=.*>' | sed -e 's/<a /\n<a /g' | sed -e 's/<a .*href=['"'"'"]//' -e 's/["'"'"'].*$//' -e '/^$/ d' | awk -F "/" '/tar.xz/ {print $2}')
         downloadtar_dirname=$(echo "$downloadtar_name" | sed -e 's|.tar.xz||')
         rm -rf "${downloadtar_dirname}"
+        rm -rf $"{downloadtar_name}"
         echo "wget "$GCC_SNAPSHOTSEVEN/${downloadtar_name}""
         wget "$GCC_SNAPSHOTSEVEN/${downloadtar_name}"
         echo "tar xf ${downloadtar_name}"
@@ -249,6 +282,10 @@ install_gcc() {
         mkdir -p test
         cd test
         GCC_PREFIX="/opt/${downloadtar_dirname}"
+        if [[ "$CCACHE" != [yY] ]]; then
+            export CC="gcc"
+            export CXX="g++"
+        fi
         echo "../configure --prefix=$GCC_PREFIX --disable-multilib $GCC_COMPILEOPTS"
         ../configure --prefix="$GCC_PREFIX" --disable-multilib $GCC_COMPILEOPTS
     elif [[ "$GCC_SVN" = [yY] && "$GCCSVN_VER" -eq '8' ]]; then
@@ -276,8 +313,23 @@ install_gcc() {
         ../configure --prefix="$GCC_PREFIX" --disable-multilib $GCC_COMPILEOPTS
     fi
     echo
-    echo "time make${MAKETHREADS}"
-    time make${MAKETHREADS}
+    if [[ "$GCC_PGO" = [yY] ]]; then
+        if [[ "$GCCSEVEN" = [Yy] ]]; then
+            echo "time make BOOT_CFLAGS="$GCCCFLAGS" ${MAKETHREADS} profiledbootstrap"
+            time make BOOT_CFLAGS="$GCCCFLAGS" ${MAKETHREADS} profiledbootstrap
+        else
+            echo "time make${MAKETHREADS} profiledbootstrap"
+            time make${MAKETHREADS} profiledbootstrap
+        fi
+    else
+        if [[ "$GCCSEVEN" = [Yy] ]]; then
+            echo "time make BOOT_CFLAGS="$GCCCFLAGS" ${MAKETHREADS}"
+            time make BOOT_CFLAGS="$GCCCFLAGS" ${MAKETHREADS}
+        else
+            echo "time make${MAKETHREADS}"
+            time make${MAKETHREADS}
+        fi
+    fi
     echo
     if [[ "$BUILTRPM" = [Yy] ]]; then
         echo "create GCC RPM package"
@@ -289,10 +341,16 @@ install_gcc() {
         time make install DESTDIR=/home/fpmtmp/gcc_installdir
         # remove conflicting file with binutils
         rm -rf /home/fpmtmp/gcc_installdir${GCC_PREFIX}/share/info/dir
-        echo "fpm -s dir -t rpm -n gcc-all -v $GCCFPM_VER -C /home/fpmtmp/gcc_installdir"
-        time fpm -s dir -t rpm -n gcc-all -v $GCCFPM_VER -C /home/fpmtmp/gcc_installdir
+        if [ -f /usr/bin/xz ]; then
+            FPMCOMPRESS_OPT='--rpm-compression xz'
+        else
+            FPMCOMPRESS_OPT='--rpm-compression gzip'
+        fi
+        echo "fpm -s dir -t rpm -n gcc-all -v $GCCFPM_VER $FPMCOMPRESS_OPT -C /home/fpmtmp/gcc_installdir"
+        time fpm -s dir -t rpm -n gcc-all -v $GCCFPM_VER $FPMCOMPRESS_OPT -C /home/fpmtmp/gcc_installdir
         echo
-        ls -lah gcc-all-${GCCFPM_VER}-1.x86_64.rpm
+        GCCRPM_PATH="$(pwd)/gcc-all-${GCCFPM_VER}-1.x86_64.rpm"
+        ls -lah "$GCCRPM_PATH"
         echo
         echo "yum -y localinstall gcc-all-${GCCFPM_VER}-1.x86_64.rpm"
         yum -y localinstall gcc-all-${GCCFPM_VER}-1.x86_64.rpm
@@ -309,7 +367,7 @@ install_gcc() {
     echo
 
     echo "*************************************************"
-    cecho "* Setup ${GCC_PREFIX}/enable" $boldgreen
+    cecho "Setup ${GCC_PREFIX}/enable" $boldgreen
     echo "*************************************************"
     rm -rf "${GCC_PREFIX}/enable"
 cat > "${GCC_PREFIX}/enable" <<EOF
@@ -324,9 +382,8 @@ export LD_LIBRARY_PATH=\$rpmlibdir\$rpmlibdir32\${LD_LIBRARY_PATH:+:\${LD_LIBRAR
 EOF
     echo
     echo "*************************************************"
-    cecho "* Setup ${GCC_PREFIX}/enable completed" $boldgreen
+    cecho "Setup ${GCC_PREFIX}/enable completed" $boldgreen
     echo "*************************************************"
-    echo
 
     echo
     echo "${GCC_PREFIX}/bin/ld -v"
@@ -348,8 +405,17 @@ EOF
     echo "${GCC_PREFIX}/bin/g++ --version"
     "${GCC_PREFIX}/bin/g++" --version
 
+    if [[ "$BUILTRPM" = [Yy] ]]; then
+        echo
+        echo "RPMs Built"
+        echo "$BINUTIL_RPMPATH"
+        echo "$GCCRPM_PATH"
+    fi
+
+    echo
     echo "*************************************************"
-    cecho "* Compile GCC Completed" $boldgreen
+    cecho "Compile GCC Completed" $boldgreen
+    echo "log: ${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
     echo "*************************************************"
 }
 
@@ -358,19 +424,15 @@ case "$1" in
     install )
             starttime=$(TZ=UTC date +%s.%N)
         {
-
-            if [[ -f /opt/rh/devtoolset-7/root/usr/bin/gcc && -f /opt/rh/devtoolset-7/root/usr/bin/g++ ]]; then
-                source /opt/rh/devtoolset-7/enable
-            fi
             fpm_install
             binutils_install
             install_gcc
             # postfixsetup
-        } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install_${DT}.log"
+        } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             endtime=$(TZ=UTC date +%s.%N)
             INSTALLTIME=$(echo "scale=2;$endtime - $starttime"|bc )
-            echo "" >> "${CENTMINLOGDIR}/tools-gcc-install_${DT}.log"
-            echo "Total Binutils + GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install_${DT}.log"
+            echo "" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            echo "Total Binutils + GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
         ;;
     * )
         echo "Usage:"
