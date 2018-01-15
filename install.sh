@@ -8,6 +8,7 @@
 # http://wiki.osdev.org/GCC_Cross-Compiler#Binutils
 ################################################
 DT=$(date +"%d%m%y-%H%M%S")
+BUILTRPM='y'
 
 # SVN GCC 7 or 8
 GCCSVN_VER='8'
@@ -21,7 +22,7 @@ DIR_TMP='/svr-setup'
 CENTMINLOGDIR='/root/centminlogs'
 GCC_SNAPSHOTSEVEN='http://www.netgull.com/gcc/snapshots/LATEST-7/'
 GCC_SNAPSHOTEIGHT='http://www.netgull.com/gcc/snapshots/LATEST-8/'
-GCC_COMPILEOPTS='--enable-shared --disable-nls --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++ --enable-initfini-array --disable-libgcj --enable-gnu-indirect-function --with-tune=generic --build=x86_64-redhat-linux'
+GCC_COMPILEOPTS='--enable-shared --disable-nls --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-install-libiberty --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++ --enable-initfini-array --disable-libgcj --enable-gnu-indirect-function --with-tune=generic --build=x86_64-redhat-linux'
 ################################################
 # Setup Colours
 black='\E[30;40m'
@@ -110,6 +111,31 @@ else
     MAKETHREADS=" -j$CPUS"
 fi
 
+fpm_install() {
+    if [[ "$BUILTRPM" = [Yy] ]]; then
+        if [ ! -f /usr/local/bin/fpm ]; then
+        echo "*************************************************"
+        cecho "* Install FPM Start..." $boldgreen
+        echo "*************************************************"
+        echo
+        
+            fpmpkgs='ruby-devel gcc make rpm-build rubygems'
+            for i in ${fpmpkgs[@]}; do 
+                echo $i; 
+                if [[ "$(rpm --quiet -ql $i; echo $?)" -ne '0' ]]; then
+                    yum -y install $i
+                fi
+            done
+            gem install --no-ri --no-rdoc fpm
+
+        echo "*************************************************"
+        cecho "* Install FPM Completed" $boldgreen
+        echo "*************************************************"
+        echo
+        fi
+    fi
+}
+
 binutils_install() {
     if [[ "$GCC_SVN" = [yY] && "$GCCSVN_VER" -eq '7' ]]; then
         GCC_SYMLINK='/opt/gcc7'
@@ -134,7 +160,24 @@ binutils_install() {
     ../binutils-${BINUTILS_VER}/configure --prefix="$GCC_PREFIX" --enable-gold --enable-plugins --disable-nls --disable-werror
     time make${MAKETHREADS} all-gold
     time make${MAKETHREADS}
-    time make install
+    if [[ "$BUILTRPM" = [Yy] ]]; then
+        echo "create GCC RPM package"
+        rm -rf /home/fpmtmp/binutils_installdir
+        rpm -e binutils-custom
+        echo "mkdir -p /home/fpmtmp/binutils_installdir"
+        mkdir -p /home/fpmtmp/binutils_installdir
+        echo "time make install DESTDIR=/home/fpmtmp/binutils_installdir"
+        time make install DESTDIR=/home/fpmtmp/binutils_installdir
+        echo "fpm -s dir -t rpm -n binutils-custom -v $BINUTILS_VER -C /home/fpmtmp/binutils_installdir"
+        time fpm -s dir -t rpm -n binutils-custom -v $BINUTILS_VER -C /home/fpmtmp/binutils_installdir
+        echo
+        ls -lah binutils-custom-${BINUTILS_VER}-1.x86_64.rpm
+        echo
+        echo "yum -y localinstall binutils-custom-${BINUTILS_VER}-1.x86_64.rpm"
+        yum -y localinstall binutils-custom-${BINUTILS_VER}-1.x86_64.rpm
+    else
+        time make install
+    fi
     echo "${GCC_PREFIX}/bin/ld -v"
     ${GCC_PREFIX}/bin/ld -v
     echo "${GCC_PREFIX}/bin/ld.gold -v"
@@ -193,6 +236,7 @@ install_gcc() {
         ../gcc-${GCC_VER}/configure --prefix="$GCC_PREFIX" --disable-multilib $GCC_COMPILEOPTS
     elif [[ "$GCC_SVN" = [yY] && "$GCCSVN_VER" -eq '7' ]]; then
         GCC_SYMLINK='/opt/gcc7'
+        GCCFPM_VER='7.2'
         downloadtar_name=$(curl -4s $GCC_SNAPSHOTSEVEN | grep -o '<a .*href=.*>' | sed -e 's/<a /\n<a /g' | sed -e 's/<a .*href=['"'"'"]//' -e 's/["'"'"'].*$//' -e '/^$/ d' | awk -F "/" '/tar.xz/ {print $2}')
         downloadtar_dirname=$(echo "$downloadtar_name" | sed -e 's|.tar.xz||')
         rm -rf "${downloadtar_dirname}"
@@ -209,6 +253,7 @@ install_gcc() {
         ../configure --prefix="$GCC_PREFIX" --disable-multilib $GCC_COMPILEOPTS
     elif [[ "$GCC_SVN" = [yY] && "$GCCSVN_VER" -eq '8' ]]; then
         GCC_SYMLINK='/opt/gcc8'
+        GCCFPM_VER='8.0'
         downloadtar_name=$(curl -4s $GCC_SNAPSHOTEIGHT | grep -o '<a .*href=.*>' | sed -e 's/<a /\n<a /g' | sed -e 's/<a .*href=['"'"'"]//' -e 's/["'"'"'].*$//' -e '/^$/ d' | awk -F "/" '/tar.xz/ {print $2}')
         downloadtar_dirname=$(echo "$downloadtar_name" | sed -e 's|.tar.xz||')
         rm -rf "${downloadtar_dirname}"
@@ -233,8 +278,27 @@ install_gcc() {
     echo "time make${MAKETHREADS}"
     time make${MAKETHREADS}
     echo
-    echo "time make install"
-    time make install
+    if [[ "$BUILTRPM" = [Yy] ]]; then
+        echo "create GCC RPM package"
+        rm -rf /home/fpmtmp/gcc_installdir
+        rpm -e gcc-all
+        echo "mkdir -p /home/fpmtmp/gcc_installdir"
+        mkdir -p /home/fpmtmp/gcc_installdir
+        echo "time make install DESTDIR=/home/fpmtmp/gcc_installdir"
+        time make install DESTDIR=/home/fpmtmp/gcc_installdir
+        # remove conflicting file with binutils
+        rm -rf /home/fpmtmp/gcc_installdir${GCC_PREFIX}/share/info/dir
+        echo "fpm -s dir -t rpm -n gcc-all -v $GCCFPM_VER -C /home/fpmtmp/gcc_installdir"
+        time fpm -s dir -t rpm -n gcc-all -v $GCCFPM_VER -C /home/fpmtmp/gcc_installdir
+        echo
+        ls -lah gcc-all-${GCCFPM_VER}-1.x86_64.rpm
+        echo
+        echo "yum -y localinstall gcc-all-${GCCFPM_VER}-1.x86_64.rpm"
+        yum -y localinstall gcc-all-${GCCFPM_VER}-1.x86_64.rpm
+    else
+        echo "time make install"
+        time make install
+    fi
     errcheck=$?
     if [[ "$errcheck" -eq '0' ]]; then
         cd "$GCC_PREFIX"
@@ -297,6 +361,7 @@ case "$1" in
             if [[ -f /opt/rh/devtoolset-7/root/usr/bin/gcc && -f /opt/rh/devtoolset-7/root/usr/bin/g++ ]]; then
                 source /opt/rh/devtoolset-7/enable
             fi
+            fpm_install
             binutils_install
             install_gcc
             # postfixsetup
