@@ -257,6 +257,7 @@ install_gcc() {
         downloadtar_name=$(curl -4s $GCC_SNAPSHOTEIGHT | grep -o '<a .*href=.*>' | sed -e 's/<a /\n<a /g' | sed -e 's/<a .*href=['"'"'"]//' -e 's/["'"'"'].*$//' -e '/^$/ d' | awk -F "/" '/tar.xz/ {print $2}')
         downloadtar_dirname=$(echo "$downloadtar_name" | sed -e 's|.tar.xz||')
         rm -rf "${downloadtar_dirname}"
+        rm -rf $"{downloadtar_name}"
         echo "wget "$GCC_SNAPSHOTEIGHT/${downloadtar_name}""
         wget "$GCC_SNAPSHOTEIGHT/${downloadtar_name}"
         echo "tar xf ${downloadtar_name}"
