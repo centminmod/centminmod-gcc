@@ -240,7 +240,7 @@ install_gcc() {
         source /opt/rh/devtoolset-7/enable
         GCCCFLAGS="'${OPT_LEVEL}'"
         # export CXXFLAGS="${CFLAGS}"
-        GCC_COMPILEOPTS="$GCC_COMPILEOPTS --enable-gold"
+        GCC_COMPILEOPTS="$GCC_COMPILEOPTS --enable-lto --enable-gold"
     fi
 
     echo "*************************************************"
