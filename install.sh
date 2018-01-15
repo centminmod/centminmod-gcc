@@ -18,7 +18,7 @@ GCC_PREFIX="/opt/gcc-${GCC_VER}"
 # Profile Guided Optimiized GCC build
 # using profiledbootstrap
 # https://gcc.gnu.org/install/build.html
-GCC_PGO='y'
+GCC_PGO='n'
 BINUTILS_VER='2.29.1'
 
 OPT_LEVEL='-O2'
@@ -239,7 +239,7 @@ install_gcc() {
         source /opt/rh/devtoolset-7/enable
         GCCCFLAGS="${OPT_LEVEL}"
         # export CXXFLAGS="${CFLAGS}"
-        GCC_COMPILEOPTS="$GCC_COMPILEOPTS --enable-gold"
+        GCC_COMPILEOPTS="$GCC_COMPILEOPTS --enable-lto --enable-gold"
     fi
 
     echo "*************************************************"
