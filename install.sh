@@ -232,7 +232,7 @@ binutils_install() {
     if [[ "$BUILTRPM" = [Yy] ]]; then
         echo "create GCC RPM package"
         rm -rf /home/fpmtmp/binutils_installdir
-        rpm -e binutils-custom
+        rpm -e binutils-gcc${GCCSVN_VER}
         echo "mkdir -p /home/fpmtmp/binutils_installdir"
         mkdir -p /home/fpmtmp/binutils_installdir
         echo "time make install DESTDIR=/home/fpmtmp/binutils_installdir"
@@ -242,14 +242,14 @@ binutils_install() {
         else
             FPMCOMPRESS_OPT='--rpm-compression gzip'
         fi
-        echo "fpm -s dir -t rpm -n binutils-custom -v $BINUTILS_VER $FPMCOMPRESS_OPT -C /home/fpmtmp/binutils_installdir"
-        time fpm -s dir -t rpm -n binutils-custom -v $BINUTILS_VER $FPMCOMPRESS_OPT -C /home/fpmtmp/binutils_installdir
+        echo "fpm -s dir -t rpm -n binutils-gcc${GCCSVN_VER} -v $BINUTILS_VER $FPMCOMPRESS_OPT -C /home/fpmtmp/binutils_installdir"
+        time fpm -s dir -t rpm -n binutils-gcc${GCCSVN_VER} -v $BINUTILS_VER $FPMCOMPRESS_OPT -C /home/fpmtmp/binutils_installdir
         echo
-        BINUTIL_RPMPATH="$(pwd)/binutils-custom-${BINUTILS_VER}-1.x86_64.rpm"
+        BINUTIL_RPMPATH="$(pwd)/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm"
         ls -lah "$BINUTIL_RPMPATH"
         echo
-        echo "yum -y localinstall binutils-custom-${BINUTILS_VER}-1.x86_64.rpm"
-        yum -y localinstall binutils-custom-${BINUTILS_VER}-1.x86_64.rpm
+        echo "yum -y localinstall binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm"
+        yum -y localinstall binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm
     else
         time make install
     fi
