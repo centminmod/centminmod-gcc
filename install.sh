@@ -326,7 +326,7 @@ install_gcc() {
         ../gcc-${GCC_VER}/configure --prefix="$GCC_PREFIX" --disable-multilib $GCC_COMPILEOPTS
     elif [[ "$GCC_SVN" = [yY] && "$GCCSVN_VER" -eq '7' ]]; then
         GCC_SYMLINK='/opt/gcc7'
-        GCCFPM_VER='7.2'
+        GCCFPM_VER='7.2.1'
         downloadtar_name=$(curl -4s $GCC_SNAPSHOTSEVEN | grep -o '<a .*href=.*>' | sed -e 's/<a /\n<a /g' | sed -e 's/<a .*href=['"'"'"]//' -e 's/["'"'"'].*$//' -e '/^$/ d' | awk -F "/" '/tar.xz/ {print $2}')
         downloadtar_dirname=$(echo "$downloadtar_name" | sed -e 's|.tar.xz||')
         rm -rf "${downloadtar_dirname}"
