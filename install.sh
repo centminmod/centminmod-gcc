@@ -13,7 +13,7 @@ BUILTRPM='y'
 # SVN GCC 7 or 8
 GCCSVN_VER='8'
 GCC_SVN='y'
-GCC_VER='7.2.0'
+GCC_VER='7.2.1'
 GCC_PREFIX="/opt/gcc-${GCC_VER}"
 GCC_LTO='y'
 GCC_GOLD='y'
