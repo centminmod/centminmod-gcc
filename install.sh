@@ -24,6 +24,8 @@ GCC_PGO='n'
 BOOTCFLAGS='n'
 BINUTILS_VER='2.29.1'
 
+CLANG_FOUR='n'
+
 OPT_LEVEL=-O2
 CCACHE='y'
 DIR_TMP='/svr-setup'
@@ -139,6 +141,35 @@ else
     MAKETHREADS=" -j$CPUS"
 fi
 
+scl_install() {
+    if [[ "$(gcc --version | head -n1 | awk '{print $3}' | cut -d . -f1,2 | sed "s|\.|0|")" -gt '407' ]]; then
+        echo
+        echo "install centos-release-scl for newer gcc and g++ versions"
+        if [[ -z "$(rpm -qa | grep rpmforge)" ]]; then
+            if [[ "$(rpm -ql centos-release-scl >/dev/null 2>&1; echo $?)" -ne '0' ]]; then
+                time yum -y -q install centos-release-scl
+            fi
+        else
+            if [[ "$(rpm -ql centos-release-scl >/dev/null 2>&1; echo $?)" -ne '0' ]]; then
+                time yum -y -q install centos-release-scl --disablerepo=rpmforge
+            fi
+        fi
+    fi
+    if [[ -z "$(rpm -qa | grep rpmforge)" ]]; then
+        if [[ "$(rpm -ql devtoolset-7-gcc >/dev/null 2>&1; echo $?)" -ne '0' ]] || [[ "$(rpm -ql devtoolset-7-gcc-c++ >/dev/null 2>&1; echo $?)" -ne '0' ]] || [[ "$(rpm -ql devtoolset-7-binutils >/dev/null 2>&1; echo  $?)" -ne '0' ]]; then
+            time yum -y -q install devtoolset-7-gcc devtoolset-7-gcc-c++ devtoolset-7-binutils
+        fi
+    else
+        if [[ "$(rpm -ql devtoolset-7-gcc >/dev/null 2>&1; echo $?)" -ne '0' ]] || [[ "$(rpm -ql devtoolset-7-gcc-c++ >/dev/null 2>&1; echo $?)" -ne '0' ]] || [[ "$(rpm -ql devtoolset-7-binutils >/dev/null 2>&1; echo  $?)" -ne '0' ]]; then
+            time yum -y -q install devtoolset-7-gcc devtoolset-7-gcc-c++ devtoolset-7-binutils --disablerepo=rpmforge
+        fi
+    fi
+    if [[ "$CLANG_FOUR" = [yY] && ! -f /opt/rh/llvm-toolset-7/root/usr/bin/clang ]]; then
+        time yum -y install devtoolset-7-runtime llvm-toolset-7-runtime devtoolset-7-libstdc++-devel llvm-toolset-7-clang llvm-toolset-7-llvm-libs llvm-toolset-7-llvm-static llvm-toolset-7-compiler-rt llvm-toolset-7-libomp llvm-toolset-7-clang-libs
+    fi
+    echo
+}
+
 fpm_install() {
     if [[ "$BUILTRPM" = [Yy] ]]; then
         if [ ! -f /usr/local/bin/fpm ]; then
@@ -170,6 +201,9 @@ binutils_install() {
         source /opt/rh/devtoolset-7/enable
         # export CFLAGS="${OPT_LEVEL} -pipe -fomit-frame-pointer"
         # export CXXFLAGS="${CFLAGS}"
+    else
+        scl_install
+        source /opt/rh/devtoolset-7/enable
     fi
 
     if [[ "$GCC_SVN" = [yY] && "$GCCSVN_VER" -eq '7' ]]; then
@@ -252,6 +286,13 @@ EOF
 install_gcc() {
 
     if [[ -f /opt/rh/devtoolset-7/root/usr/bin/gcc && -f /opt/rh/devtoolset-7/root/usr/bin/g++ ]]; then
+        GCCSEVEN='y'
+        source /opt/rh/devtoolset-7/enable
+        GCCCFLAGS="'${OPT_LEVEL} -Wno-maybe-uninitialized'"
+        # export CXXFLAGS="${CFLAGS}"
+        GCC_COMPILEOPTS="${GCC_COMPILEOPTS}${LTO_OPT}${GOLD_OPT}"
+    else
+        scl_install
         GCCSEVEN='y'
         source /opt/rh/devtoolset-7/enable
         GCCCFLAGS="'${OPT_LEVEL} -Wno-maybe-uninitialized'"
@@ -481,6 +522,6 @@ case "$1" in
         ;;
     * )
         echo "Usage:"
-        echo "$0 {install}"
+        echo "$0 {install|installgcc}"
         ;;
 esac
