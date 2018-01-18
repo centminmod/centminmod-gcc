@@ -392,7 +392,7 @@ install_gcc() {
     if [[ "$BUILTRPM" = [Yy] ]]; then
         echo "create GCC RPM package"
         rm -rf /home/fpmtmp/gcc_installdir
-        rpm -e gcc-all
+        rpm -e gcc${GCCSVN_VER}-all
         echo "mkdir -p /home/fpmtmp/gcc_installdir"
         mkdir -p /home/fpmtmp/gcc_installdir
         echo "time make install DESTDIR=/home/fpmtmp/gcc_installdir"
@@ -418,14 +418,14 @@ if [[ -L "$GCC_SYMLINK" ]]; then
 fi
 EOF
         chmod +x remove_symlink.sh
-        echo "fpm -s dir -t rpm -n gcc-all -v $GCCFPM_VER $FPMCOMPRESS_OPT --after-install symlink.sh --before-remove remove_symlink.sh -C /home/fpmtmp/gcc_installdir"
-        time fpm -s dir -t rpm -n gcc-all -v $GCCFPM_VER $FPMCOMPRESS_OPT --after-install symlink.sh --before-remove remove_symlink.sh -C /home/fpmtmp/gcc_installdir
+        echo "fpm -s dir -t rpm -n gcc${GCCSVN_VER}-all -v $GCCFPM_VER $FPMCOMPRESS_OPT --after-install symlink.sh --before-remove remove_symlink.sh -C /home/fpmtmp/gcc_installdir"
+        time fpm -s dir -t rpm -n gcc${GCCSVN_VER}-all -v $GCCFPM_VER $FPMCOMPRESS_OPT --after-install symlink.sh --before-remove remove_symlink.sh -C /home/fpmtmp/gcc_installdir
         echo
-        GCCRPM_PATH="$(pwd)/gcc-all-${GCCFPM_VER}-1.x86_64.rpm"
+        GCCRPM_PATH="$(pwd)/gcc${GCCSVN_VER}-all-${GCCFPM_VER}-1.x86_64.rpm"
         ls -lah "$GCCRPM_PATH"
         echo
-        echo "yum -y localinstall gcc-all-${GCCFPM_VER}-1.x86_64.rpm"
-        yum -y localinstall gcc-all-${GCCFPM_VER}-1.x86_64.rpm
+        echo "yum -y localinstall gcc${GCCSVN_VER}-all-${GCCFPM_VER}-1.x86_64.rpm"
+        yum -y localinstall gcc${GCCSVN_VER}-all-${GCCFPM_VER}-1.x86_64.rpm
     else
         echo "time make install"
         time make install
