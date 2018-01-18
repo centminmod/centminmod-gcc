@@ -15,6 +15,11 @@ GCCSVN_VER='8'
 GCC_SVN='y'
 GCC_VER='7.2.1'
 GCC_PREFIX="/opt/gcc-${GCC_VER}"
+# download from ftp://gcc.gnu.org/pub/gcc/infrastructure/
+# or via wget code for more reliability as
+# ./contrib/download_prerequisites script sees to fail to
+# download some required packages each time it runs
+GCC_DOWNLOADPREREQ='n'
 GCC_LTO='y'
 GCC_GOLD='y'
 # Profile Guided Optimiized GCC build
@@ -24,15 +29,20 @@ GCC_PGO='n'
 BOOTCFLAGS='n'
 BINUTILS_VER='2.29.1'
 
-CLANG_FOUR='n'
+# GCC Downloads
+GMP_FILE='gmp-6.1.0.tar.bz2'
+ISL_FILE='isl-0.18.tar.bz2'
+MPC_FILE='mpc-1.0.3.tar.gz'
+MPFR_FILE='mpfr-3.1.4.tar.bz2'
 
+CLANG_FOUR='n'
 OPT_LEVEL=-O2
 CCACHE='y'
 DIR_TMP='/svr-setup'
 CENTMINLOGDIR='/root/centminlogs'
 GCC_SNAPSHOTSEVEN='http://www.netgull.com/gcc/snapshots/LATEST-7/'
 GCC_SNAPSHOTEIGHT='http://www.netgull.com/gcc/snapshots/LATEST-8/'
-GCC_COMPILEOPTS='--enable-plugin --with-gcc-major-version-only --enable-shared --disable-nls --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-install-libiberty --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++ --enable-initfini-array --disable-libgcj --enable-gnu-indirect-function --with-tune=generic --build=x86_64-redhat-linux'
+GCC_COMPILEOPTS='--enable-bootstrap --enable-plugin --with-gcc-major-version-only --enable-shared --disable-nls --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-install-libiberty --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++ --enable-initfini-array --disable-libgcj --enable-gnu-indirect-function --with-tune=generic --build=x86_64-redhat-linux'
 ################################################
 # Setup Colours
 black='\E[30;40m'
@@ -141,6 +151,22 @@ else
     MAKETHREADS=" -j$CPUS"
 fi
 
+download_prereq() {
+    echo
+    echo "downloading from ftp://gcc.gnu.org/pub/gcc/infrastructure/"
+    rm -rf ${GMP_FILE}
+    rm -rf ${ISL_FILE}
+    rm -rf ${MPC_FILE}
+    rm -rf ${MPFR_FILE}
+    wget --no-verbose -O ./${GMP_FILE} ftp://gcc.gnu.org/pub/gcc/infrastructure/${GMP_FILE}
+    wget --no-verbose -O ./${ISL_FILE} ftp://gcc.gnu.org/pub/gcc/infrastructure/${ISL_FILE}
+    wget --no-verbose -O ./${MPC_FILE} ftp://gcc.gnu.org/pub/gcc/infrastructure/${MPC_FILE}
+    wget --no-verbose -O ./${MPFR_FILE} ftp://gcc.gnu.org/pub/gcc/infrastructure/${MPFR_FILE}
+    echo
+    ls -lah ${GMP_FILE} ${ISL_FILE} ${MPC_FILE} ${MPFR_FILE}
+    echo
+}
+
 scl_install() {
     if [[ "$(gcc --version | head -n1 | awk '{print $3}' | cut -d . -f1,2 | sed "s|\.|0|")" -gt '407' ]]; then
         echo
@@ -242,8 +268,11 @@ binutils_install() {
         else
             FPMCOMPRESS_OPT='--rpm-compression gzip'
         fi
-        echo "fpm -s dir -t rpm -n binutils-gcc${GCCSVN_VER} -v $BINUTILS_VER $FPMCOMPRESS_OPT -C /home/fpmtmp/binutils_installdir"
-        time fpm -s dir -t rpm -n binutils-gcc${GCCSVN_VER} -v $BINUTILS_VER $FPMCOMPRESS_OPT -C /home/fpmtmp/binutils_installdir
+
+        echo -e "* $(date +"%a %b %d %Y") George Liu <centminmod.com> $BINUTILS_VER\n - Binutils $BINUTILS_VER for centminmod.com LEMP stack installs" > "binutils-gcc${GCCSVN_VER}-changelog"
+
+        echo "fpm -s dir -t rpm -n binutils-gcc${GCCSVN_VER} -v $BINUTILS_VER $FPMCOMPRESS_OPT --rpm-changelog \"binutils-gcc${GCCSVN_VER}-changelog\" --rpm-summary \"Binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stack installs\" -C /home/fpmtmp/binutils_installdir"
+        time fpm -s dir -t rpm -n binutils-gcc${GCCSVN_VER} -v $BINUTILS_VER $FPMCOMPRESS_OPT --rpm-changelog "binutils-gcc${GCCSVN_VER}-changelog" --rpm-summary "Binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stack installs" -C /home/fpmtmp/binutils_installdir
         echo
         BINUTIL_RPMPATH="$(pwd)/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm"
         ls -lah "$BINUTIL_RPMPATH"
@@ -336,6 +365,11 @@ install_gcc() {
         echo "tar xf ${downloadtar_name}"
         tar xf "${downloadtar_name}"
         cd "$downloadtar_dirname"
+        if [[ "$GCC_DOWNLOADPREREQ" = [yY] ]]; then
+            ./contrib/download_prerequisites
+        else
+            download_prereq
+        fi
         echo "mkdir -p test"
         mkdir -p test
         cd test
@@ -358,7 +392,11 @@ install_gcc() {
         echo "tar xf ${downloadtar_name}"
         tar xf "${downloadtar_name}"
         cd "$downloadtar_dirname"
-        ./contrib/download_prerequisites
+        if [[ "$GCC_DOWNLOADPREREQ" = [yY] ]]; then
+            ./contrib/download_prerequisites
+        else
+            download_prereq
+        fi
         echo "mkdir -p test"
         mkdir -p test
         cd test
@@ -418,8 +456,11 @@ if [[ -L "$GCC_SYMLINK" ]]; then
 fi
 EOF
         chmod +x remove_symlink.sh
-        echo "fpm -s dir -t rpm -n gcc${GCCSVN_VER}-all -v $GCCFPM_VER $FPMCOMPRESS_OPT --after-install symlink.sh --before-remove remove_symlink.sh -C /home/fpmtmp/gcc_installdir"
-        time fpm -s dir -t rpm -n gcc${GCCSVN_VER}-all -v $GCCFPM_VER $FPMCOMPRESS_OPT --after-install symlink.sh --before-remove remove_symlink.sh -C /home/fpmtmp/gcc_installdir
+
+echo -e "* $(date +"%a %b %d %Y") George Liu <centminmod.com> ${GCCSVN_VER}\n - GCC ${GCCSVN_VER} for centminmod.com LEMP stack installs" > "gcc${GCCSVN_VER}-changelog"
+
+        echo "fpm -s dir -t rpm -n gcc${GCCSVN_VER}-all -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog \"gcc${GCCSVN_VER}-changelog\" --rpm-summary \"gcc${GCCSVN_VER}-all for centminmod.com LEMP stack installs\" --after-install symlink.sh --before-remove remove_symlink.sh -C /home/fpmtmp/gcc_installdir"
+        time fpm -s dir -t rpm -n gcc${GCCSVN_VER}-all -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog "gcc${GCCSVN_VER}-changelog" --rpm-summary "gcc${GCCSVN_VER}-all for centminmod.com LEMP stack installs" --after-install symlink.sh --before-remove remove_symlink.sh -C /home/fpmtmp/gcc_installdir
         echo
         GCCRPM_PATH="$(pwd)/gcc${GCCSVN_VER}-all-${GCCFPM_VER}-1.x86_64.rpm"
         ls -lah "$GCCRPM_PATH"
@@ -477,11 +518,24 @@ EOF
     echo "${GCC_PREFIX}/bin/g++ --version"
     "${GCC_PREFIX}/bin/g++" --version
 
+    echo
+    echo "${GCC_PREFIX}/bin/gcc -v"
+    "${GCC_PREFIX}/bin/gcc" -v
+
     if [[ "$BUILTRPM" = [Yy] ]]; then
         echo
         echo "RPMs Built"
         echo "$BINUTIL_RPMPATH"
         echo "$GCCRPM_PATH"
+        echo
+        yum -q info "binutils-gcc${GCCSVN_VER}"
+        echo
+        rpm -qa --changelog "binutils-gcc${GCCSVN_VER}"
+        echo
+        yum -q info "gcc${GCCSVN_VER}-all"
+        echo
+        rpm -qa --changelog "gcc${GCCSVN_VER}-all"
+        echo
     fi
 
     echo
@@ -494,6 +548,36 @@ EOF
 #########################
 case "$1" in
     install )
+            starttime=$(TZ=UTC date +%s.%N)
+        {
+            fpm_install
+            binutils_install
+            install_gcc
+            # postfixsetup
+        } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            endtime=$(TZ=UTC date +%s.%N)
+            INSTALLTIME=$(echo "scale=2;$endtime - $starttime"|bc )
+            echo "" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            echo "Total Binutils + GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            tail -2 "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+        ;;
+    install7 )
+        GCCSVN_VER='7'
+            starttime=$(TZ=UTC date +%s.%N)
+        {
+            fpm_install
+            binutils_install
+            install_gcc
+            # postfixsetup
+        } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            endtime=$(TZ=UTC date +%s.%N)
+            INSTALLTIME=$(echo "scale=2;$endtime - $starttime"|bc )
+            echo "" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            echo "Total Binutils + GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            tail -2 "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+        ;;
+    install8 )
+        GCCSVN_VER='8'
             starttime=$(TZ=UTC date +%s.%N)
         {
             fpm_install
@@ -522,6 +606,6 @@ case "$1" in
         ;;
     * )
         echo "Usage:"
-        echo "$0 {install|installgcc}"
+        echo "$0 {install|install7|install8|installgcc}"
         ;;
 esac
