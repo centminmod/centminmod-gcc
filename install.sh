@@ -536,7 +536,7 @@ EOF
             mv "$GCCRPM_PATH" "$DIR_TMP"
         fi
         echo "ls -lah $DIR_TMP | egrep 'gcc${GCCSVN_VER}-all-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm'"
-        ls -lah "$DIR_TMP | egrep 'gcc${GCCSVN_VER}-all-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm'"
+        ls -lah "$DIR_TMP" | egrep "gcc${GCCSVN_VER}-all-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm"
         echo
         yum -q info "binutils-gcc${GCCSVN_VER}"
         echo
