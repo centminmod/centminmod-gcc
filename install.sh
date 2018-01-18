@@ -528,6 +528,12 @@ EOF
         echo "$BINUTIL_RPMPATH"
         echo "$GCCRPM_PATH"
         echo
+        echo "moved to: $DIR_TMP"
+        mv "$BINUTIL_RPMPATH" "$DIR_TMP"
+        mv "$GCCRPM_PATH" "$DIR_TMP"
+        echo "ls -lah $DIR_TMP | egrep 'gcc${GCCSVN_VER}-all-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm'"
+        ls -lah "$DIR_TMP | egrep 'gcc${GCCSVN_VER}-all-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm'"
+        echo
         yum -q info "binutils-gcc${GCCSVN_VER}"
         echo
         rpm -qa --changelog "binutils-gcc${GCCSVN_VER}"
@@ -560,6 +566,34 @@ case "$1" in
             echo "" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             echo "Total Binutils + GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             tail -2 "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+        ;;
+    binutils7 )
+        GCCSVN_VER='7'
+            starttime=$(TZ=UTC date +%s.%N)
+        {
+            fpm_install
+            binutils_install
+            # postfixsetup
+        } 2>&1 | tee "${CENTMINLOGDIR}/tools-binutils-install${PGOTAG}_${DT}.log"
+            endtime=$(TZ=UTC date +%s.%N)
+            INSTALLTIME=$(echo "scale=2;$endtime - $starttime"|bc )
+            echo "" >> "${CENTMINLOGDIR}/tools-binutils-install${PGOTAG}_${DT}.log"
+            echo "Total Binutils + GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-binutils-install${PGOTAG}_${DT}.log"
+            tail -2 "${CENTMINLOGDIR}/tools-binutils-install${PGOTAG}_${DT}.log"
+        ;;
+    binutils8 )
+        GCCSVN_VER='8'
+            starttime=$(TZ=UTC date +%s.%N)
+        {
+            fpm_install
+            binutils_install
+            # postfixsetup
+        } 2>&1 | tee "${CENTMINLOGDIR}/tools-binutils-install${PGOTAG}_${DT}.log"
+            endtime=$(TZ=UTC date +%s.%N)
+            INSTALLTIME=$(echo "scale=2;$endtime - $starttime"|bc )
+            echo "" >> "${CENTMINLOGDIR}/tools-binutils-install${PGOTAG}_${DT}.log"
+            echo "Total Binutils + GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-binutils-install${PGOTAG}_${DT}.log"
+            tail -2 "${CENTMINLOGDIR}/tools-binutils-install${PGOTAG}_${DT}.log"
         ;;
     install7 )
         GCCSVN_VER='7'
@@ -606,6 +640,6 @@ case "$1" in
         ;;
     * )
         echo "Usage:"
-        echo "$0 {install|install7|install8|installgcc}"
+        echo "$0 {install|install7|install8|installgcc|binutils7|binutils8}"
         ;;
 esac
