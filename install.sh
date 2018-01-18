@@ -642,8 +642,36 @@ case "$1" in
             echo "Total GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             tail -2 "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
         ;;
+    installgcc7 )
+        GCCSVN_VER='7'
+            starttime=$(TZ=UTC date +%s.%N)
+        {
+            fpm_install
+            install_gcc
+            # postfixsetup
+        } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            endtime=$(TZ=UTC date +%s.%N)
+            INSTALLTIME=$(echo "scale=2;$endtime - $starttime"|bc )
+            echo "" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            echo "Total GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            tail -2 "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+        ;;
+    installgcc8 )
+        GCCSVN_VER='8'
+            starttime=$(TZ=UTC date +%s.%N)
+        {
+            fpm_install
+            install_gcc
+            # postfixsetup
+        } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            endtime=$(TZ=UTC date +%s.%N)
+            INSTALLTIME=$(echo "scale=2;$endtime - $starttime"|bc )
+            echo "" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            echo "Total GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            tail -2 "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+        ;;
     * )
         echo "Usage:"
-        echo "$0 {install|install7|install8|installgcc|binutils7|binutils8}"
+        echo "$0 {install|install7|install8|installgcc|installgcc7|installgcc8|binutils7|binutils8}"
         ;;
 esac
