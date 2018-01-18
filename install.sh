@@ -529,8 +529,12 @@ EOF
         echo "$GCCRPM_PATH"
         echo
         echo "moved to: $DIR_TMP"
-        mv "$BINUTIL_RPMPATH" "$DIR_TMP"
-        mv "$GCCRPM_PATH" "$DIR_TMP"
+        if [ -f "$BINUTIL_RPMPATH" ]; then
+            mv "$BINUTIL_RPMPATH" "$DIR_TMP"
+        fi
+        if [ -f "$GCCRPM_PATH" ]; then
+            mv "$GCCRPM_PATH" "$DIR_TMP"
+        fi
         echo "ls -lah $DIR_TMP | egrep 'gcc${GCCSVN_VER}-all-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm'"
         ls -lah "$DIR_TMP | egrep 'gcc${GCCSVN_VER}-all-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm'"
         echo
