@@ -225,10 +225,12 @@ binutils_install() {
 
     if [[ -f /opt/rh/devtoolset-7/root/usr/bin/gcc && -f /opt/rh/devtoolset-7/root/usr/bin/g++ ]]; then
         source /opt/rh/devtoolset-7/enable
-        # export CFLAGS="${OPT_LEVEL} -pipe -fomit-frame-pointer"
+        # export CFLAGS="${OPT_LEVEL} -Wimplicit-fallthrough=0"
         # export CXXFLAGS="${CFLAGS}"
     else
         scl_install
+        # export CFLAGS="${OPT_LEVEL} -Wimplicit-fallthrough=0"
+        # export CXXFLAGS="${CFLAGS}"
         source /opt/rh/devtoolset-7/enable
     fi
 
@@ -317,14 +319,14 @@ install_gcc() {
     if [[ -f /opt/rh/devtoolset-7/root/usr/bin/gcc && -f /opt/rh/devtoolset-7/root/usr/bin/g++ ]]; then
         GCCSEVEN='y'
         source /opt/rh/devtoolset-7/enable
-        GCCCFLAGS="'${OPT_LEVEL} -Wno-maybe-uninitialized'"
+        GCCCFLAGS="'${OPT_LEVEL} -Wimplicit-fallthrough=0 -Wno-maybe-uninitialized'"
         # export CXXFLAGS="${CFLAGS}"
         GCC_COMPILEOPTS="${GCC_COMPILEOPTS}${LTO_OPT}${GOLD_OPT}"
     else
         scl_install
         GCCSEVEN='y'
         source /opt/rh/devtoolset-7/enable
-        GCCCFLAGS="'${OPT_LEVEL} -Wno-maybe-uninitialized'"
+        GCCCFLAGS="'${OPT_LEVEL} -Wimplicit-fallthrough=0 -Wno-maybe-uninitialized'"
         # export CXXFLAGS="${CFLAGS}"
         GCC_COMPILEOPTS="${GCC_COMPILEOPTS}${LTO_OPT}${GOLD_OPT}"
     fi
@@ -411,16 +413,16 @@ install_gcc() {
     echo
     if [[ "$GCC_PGO" = [yY] ]]; then
         if [[ "$BOOTCFLAGS" = [yY] && "$GCCSEVEN" = [Yy] ]]; then
-            echo "time make ${MAKETHREADS} profiledbootstrap BOOT_CFLAGS=${GCCCFLAGS} CFLAGS_FOR_TARGET=${GCCCFLAGS}"
-            time make${MAKETHREADS} profiledbootstrap BOOT_CFLAGS=${GCCCFLAGS} CFLAGS_FOR_TARGET=${GCCCFLAGS}
+            echo "time make${MAKETHREADS} profiledbootstrap BOOT_CFLAGS='${GCCCFLAGS}' CFLAGS_FOR_TARGET='${GCCCFLAGS}'"
+            time make${MAKETHREADS} profiledbootstrap BOOT_CFLAGS="'${GCCCFLAGS}'" CFLAGS_FOR_TARGET="'${GCCCFLAGS}'"
         else
             echo "time make${MAKETHREADS} profiledbootstrap"
             time make${MAKETHREADS} profiledbootstrap
         fi
     else
         if [[ "$BOOTCFLAGS" = [yY] && "$GCCSEVEN" = [Yy] ]]; then
-            echo "time make ${MAKETHREADS} BOOT_CFLAGS=${GCCCFLAGS} CFLAGS_FOR_TARGET=${GCCCFLAGS}"
-            time make${MAKETHREADS} BOOT_CFLAGS=${GCCCFLAGS} CFLAGS_FOR_TARGET=${GCCCFLAGS}
+            echo "time make${MAKETHREADS} BOOT_CFLAGS='${GCCCFLAGS}' CFLAGS_FOR_TARGET='${GCCCFLAGS}'"
+            time make${MAKETHREADS} BOOT_CFLAGS="'${GCCCFLAGS}'" CFLAGS_FOR_TARGET="'${GCCCFLAGS}'"
         else
             echo "time make${MAKETHREADS}"
             time make${MAKETHREADS}
@@ -530,10 +532,10 @@ EOF
         echo
         echo "moved to: $DIR_TMP"
         if [ -f "$BINUTIL_RPMPATH" ]; then
-            mv "$BINUTIL_RPMPATH" "$DIR_TMP"
+            mv -f "$BINUTIL_RPMPATH" "$DIR_TMP"
         fi
         if [ -f "$GCCRPM_PATH" ]; then
-            mv "$GCCRPM_PATH" "$DIR_TMP"
+            mv -f "$GCCRPM_PATH" "$DIR_TMP"
         fi
         echo "ls -lah $DIR_TMP | egrep 'gcc${GCCSVN_VER}-all-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm'"
         ls -lah "$DIR_TMP" | egrep "gcc${GCCSVN_VER}-all-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm"
@@ -629,6 +631,40 @@ case "$1" in
             echo "Total Binutils + GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             tail -2 "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
         ;;
+    installpgo7 )
+        GCCSVN_VER='7'
+        GCC_PGO='y'
+        BOOTCFLAGS='y'
+            starttime=$(TZ=UTC date +%s.%N)
+        {
+            fpm_install
+            binutils_install
+            install_gcc
+            # postfixsetup
+        } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            endtime=$(TZ=UTC date +%s.%N)
+            INSTALLTIME=$(echo "scale=2;$endtime - $starttime"|bc )
+            echo "" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            echo "Total Binutils + GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            tail -2 "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+        ;;
+    installpgo8 )
+        GCCSVN_VER='8'
+        GCC_PGO='y'
+        BOOTCFLAGS='y'
+            starttime=$(TZ=UTC date +%s.%N)
+        {
+            fpm_install
+            binutils_install
+            install_gcc
+            # postfixsetup
+        } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            endtime=$(TZ=UTC date +%s.%N)
+            INSTALLTIME=$(echo "scale=2;$endtime - $starttime"|bc )
+            echo "" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            echo "Total Binutils + GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            tail -2 "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+        ;;
     installgcc )
             starttime=$(TZ=UTC date +%s.%N)
         {
@@ -673,5 +709,41 @@ case "$1" in
     * )
         echo "Usage:"
         echo "$0 {install|install7|install8|installgcc|installgcc7|installgcc8|binutils7|binutils8}"
+        ;;
+    installpgogcc7 )
+        GCCSVN_VER='7'
+        GCC_PGO='y'
+        BOOTCFLAGS='y'
+            starttime=$(TZ=UTC date +%s.%N)
+        {
+            fpm_install
+            install_gcc
+            # postfixsetup
+        } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            endtime=$(TZ=UTC date +%s.%N)
+            INSTALLTIME=$(echo "scale=2;$endtime - $starttime"|bc )
+            echo "" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            echo "Total GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            tail -2 "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+        ;;
+    installpgogcc8 )
+        GCCSVN_VER='8'
+        GCC_PGO='y'
+        BOOTCFLAGS='y'
+            starttime=$(TZ=UTC date +%s.%N)
+        {
+            fpm_install
+            install_gcc
+            # postfixsetup
+        } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            endtime=$(TZ=UTC date +%s.%N)
+            INSTALLTIME=$(echo "scale=2;$endtime - $starttime"|bc )
+            echo "" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            echo "Total GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+            tail -2 "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
+        ;;
+    * )
+        echo "Usage:"
+        echo "$0 {install|install7|install8|installpgo7|installpgo8|installgcc|installgcc7|installgcc8|installpgogcc7|installpgogcc8|binutils7|binutils8}"
         ;;
 esac
