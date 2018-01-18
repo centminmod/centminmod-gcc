@@ -411,16 +411,16 @@ install_gcc() {
     echo
     if [[ "$GCC_PGO" = [yY] ]]; then
         if [[ "$BOOTCFLAGS" = [yY] && "$GCCSEVEN" = [Yy] ]]; then
-            echo "time make BOOT_CFLAGS=${GCCCFLAGS}${MAKETHREADS} profiledbootstrap"
-            time make BOOT_CFLAGS=${GCCCFLAGS}${MAKETHREADS} profiledbootstrap
+            echo "time make ${MAKETHREADS} profiledbootstrap BOOT_CFLAGS=${GCCCFLAGS} CFLAGS_FOR_TARGET=${GCCCFLAGS}"
+            time make${MAKETHREADS} profiledbootstrap BOOT_CFLAGS=${GCCCFLAGS} CFLAGS_FOR_TARGET=${GCCCFLAGS}
         else
             echo "time make${MAKETHREADS} profiledbootstrap"
             time make${MAKETHREADS} profiledbootstrap
         fi
     else
         if [[ "$BOOTCFLAGS" = [yY] && "$GCCSEVEN" = [Yy] ]]; then
-            echo "time make BOOT_CFLAGS=${GCCCFLAGS}${MAKETHREADS}"
-            time make BOOT_CFLAGS=${GCCCFLAGS}${MAKETHREADS}
+            echo "time make ${MAKETHREADS} BOOT_CFLAGS=${GCCCFLAGS} CFLAGS_FOR_TARGET=${GCCCFLAGS}"
+            time make${MAKETHREADS} BOOT_CFLAGS=${GCCCFLAGS} CFLAGS_FOR_TARGET=${GCCCFLAGS}
         else
             echo "time make${MAKETHREADS}"
             time make${MAKETHREADS}
