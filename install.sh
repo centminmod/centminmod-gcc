@@ -296,6 +296,150 @@ binutils_install() {
             FPMCOMPRESS_OPT='--rpm-compression gzip'
         fi
 
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/ar"
+        echo
+        strip "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/ar"
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/ar"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/as"
+        echo
+        strip "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/as"
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/as"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/ld"
+        echo
+        strip "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/ld"
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/ld"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/ld.gold"
+        echo
+        strip "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/ld.gold"
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/ld.gold"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/ld.bfd"
+        echo
+        strip "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/ld.bfd"
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/ld.bfd"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/rm"
+        echo
+        strip "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/rm"
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/rm"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/objcopy"
+        echo
+        strip "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/objcopy"
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/objcopy"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/objdump"
+        echo
+        strip "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/objdump"
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/objdump"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/ranlib"
+        echo
+        strip "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/ranlib"
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/ranlib"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/readelf"
+        echo
+        strip "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/readelf"
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/readelf"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/strip"
+        echo
+        strip "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/strip"
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/strip"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/addr2line"
+        echo
+        strip "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/addr2line"
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/addr2line"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/dwp"
+        echo
+        strip "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/dwp"
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/dwp"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/size"
+        echo
+        strip "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/size"
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/size"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/strings"
+        echo
+        strip "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/strings"
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/strings"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/gprof"
+        echo
+        strip "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/gprof"
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/gprof"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/c++filt"
+        echo
+        strip "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/c++filt"
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/c++filt"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/elfedit"
+        echo
+        strip "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/elfedit"
+        echo
+        ls -lah "/home/fpmtmp/binutils_installdir/${GCC_PREFIX}/bin/elfedit"
+        echo
+
         echo -e "* $(date +"%a %b %d %Y") George Liu <centminmod.com> $BINUTILS_VER\n - Binutils $BINUTILS_VER for centminmod.com LEMP stack installs" > "binutils-gcc${GCCSVN_VER}-changelog"
 
         echo "fpm -s dir -t rpm -n binutils-gcc${GCCSVN_VER} -v $BINUTILS_VER $FPMCOMPRESS_OPT --rpm-changelog \"binutils-gcc${GCCSVN_VER}-changelog\" --rpm-summary \"Binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stack installs\" -C /home/fpmtmp/binutils_installdir"
