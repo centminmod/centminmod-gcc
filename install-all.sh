@@ -45,8 +45,8 @@ if [[ -f install.sh ]]; then
   fi
 fi
 
-  echo "ls -lah $DIR_TMP | egrep 'gcc-|binutils-gcc'"
-  ls -lah "$DIR_TMP" | egrep 'gcc-|binutils-gcc'
+  echo "ls -lah $DIR_TMP | egrep 'gcc[7,8]-all|binutils-gcc'"
+  ls -lah "$DIR_TMP" | egrep 'gcc[7,8]-all|binutils-gcc'
 
 }
 
