@@ -80,13 +80,6 @@ return
 ################################################
 CENTOSVER=$(awk '{ print $3 }' /etc/redhat-release)
 
-if [[ "$GCC_PGO" = [yY] && "$BOOTCFLAGS" != [yY] ]]; then
-    PGOTAG='-pgo'
-    BOOTCFLAGS='y'
-else
-    PGOTAG=""
-fi
-
 if [[ "$GCC_LTO" = [yY] ]]; then
     LTO_OPT=' --enable-lto'
 else
@@ -348,16 +341,22 @@ install_gcc() {
     if [[ -f /opt/rh/devtoolset-7/root/usr/bin/gcc && -f /opt/rh/devtoolset-7/root/usr/bin/g++ ]]; then
         GCCSEVEN='y'
         source /opt/rh/devtoolset-7/enable
-        GCCCFLAGS="-g ${OPT_LEVEL} -Wimplicit-fallthrough=0 -Wno-maybe-uninitialized"
+        GCCCFLAGS="-g ${OPT_LEVEL} -Wimplicit-fallthrough=0 -Wno-maybe-uninitialized -Wno-stringop-truncation"
         # export CXXFLAGS="${CFLAGS}"
         GCC_COMPILEOPTS="${GCC_COMPILEOPTS}${LTO_OPT}${GOLD_OPT}"
     else
         scl_install
         GCCSEVEN='y'
         source /opt/rh/devtoolset-7/enable
-        GCCCFLAGS="-g ${OPT_LEVEL} -Wimplicit-fallthrough=0 -Wno-maybe-uninitialized"
+        GCCCFLAGS="-g ${OPT_LEVEL} -Wimplicit-fallthrough=0 -Wno-maybe-uninitialized -Wno-stringop-truncation"
         # export CXXFLAGS="${CFLAGS}"
         GCC_COMPILEOPTS="${GCC_COMPILEOPTS}${LTO_OPT}${GOLD_OPT}"
+    fi
+    if [[ "$GCC_PGO" = [yY] && "$BOOTCFLAGS" != [yY] ]]; then
+        PGOTAG='-pgo'
+        BOOTCFLAGS='y'
+    else
+        PGOTAG=""
     fi
 
     echo "*************************************************"
@@ -461,7 +460,7 @@ install_gcc() {
     if [[ "$BUILTRPM" = [Yy] ]]; then
         echo "create GCC RPM package"
         rm -rf /home/fpmtmp/gcc_installdir
-        rpm -e gcc${GCCSVN_VER}-all
+        rpm -e gcc${GCCSVN_VER}-all${PGOTAG}
         echo "mkdir -p /home/fpmtmp/gcc_installdir"
         mkdir -p /home/fpmtmp/gcc_installdir
         echo "time make install DESTDIR=/home/fpmtmp/gcc_installdir"
@@ -490,14 +489,14 @@ EOF
 
 echo -e "* $(date +"%a %b %d %Y") George Liu <centminmod.com> ${GCCSVN_VER}\n - GCC ${GCCSVN_VER} for centminmod.com LEMP stack installs" > "gcc${GCCSVN_VER}-changelog"
 
-        echo "fpm -s dir -t rpm -n gcc${GCCSVN_VER}-all -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog \"gcc${GCCSVN_VER}-changelog\" --rpm-summary \"gcc${GCCSVN_VER}-all for centminmod.com LEMP stack installs\" --after-install symlink.sh --before-remove remove_symlink.sh -C /home/fpmtmp/gcc_installdir"
-        time fpm -s dir -t rpm -n gcc${GCCSVN_VER}-all -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog "gcc${GCCSVN_VER}-changelog" --rpm-summary "gcc${GCCSVN_VER}-all for centminmod.com LEMP stack installs" --after-install symlink.sh --before-remove remove_symlink.sh -C /home/fpmtmp/gcc_installdir
+        echo "fpm -s dir -t rpm -n gcc${GCCSVN_VER}-all${PGOTAG} -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog \"gcc${GCCSVN_VER}-changelog\" --rpm-summary \"gcc${GCCSVN_VER}-all${PGOTAG} for centminmod.com LEMP stack installs\" --after-install symlink.sh --before-remove remove_symlink.sh -C /home/fpmtmp/gcc_installdir"
+        time fpm -s dir -t rpm -n gcc${GCCSVN_VER}-all${PGOTAG} -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog "gcc${GCCSVN_VER}-changelog" --rpm-summary "gcc${GCCSVN_VER}-all${PGOTAG} for centminmod.com LEMP stack installs" --after-install symlink.sh --before-remove remove_symlink.sh -C /home/fpmtmp/gcc_installdir
         echo
-        GCCRPM_PATH="$(pwd)/gcc${GCCSVN_VER}-all-${GCCFPM_VER}-1.x86_64.rpm"
+        GCCRPM_PATH="$(pwd)/gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm"
         ls -lah "$GCCRPM_PATH"
         echo
-        echo "yum -y localinstall gcc${GCCSVN_VER}-all-${GCCFPM_VER}-1.x86_64.rpm"
-        yum -y localinstall gcc${GCCSVN_VER}-all-${GCCFPM_VER}-1.x86_64.rpm
+        echo "yum -y localinstall gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm"
+        yum -y localinstall gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm
     else
         echo "time make install"
         time make install
@@ -566,16 +565,16 @@ EOF
         if [ -f "$GCCRPM_PATH" ]; then
             mv -f "$GCCRPM_PATH" "$DIR_TMP"
         fi
-        echo "ls -lah $DIR_TMP | egrep 'gcc${GCCSVN_VER}-all-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm'"
-        ls -lah "$DIR_TMP" | egrep "gcc${GCCSVN_VER}-all-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm"
+        echo "ls -lah $DIR_TMP | egrep 'gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm'"
+        ls -lah "$DIR_TMP" | egrep "gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm"
         echo
         yum -q info "binutils-gcc${GCCSVN_VER}"
         echo
         rpm -qa --changelog "binutils-gcc${GCCSVN_VER}"
         echo
-        yum -q info "gcc${GCCSVN_VER}-all"
+        yum -q info "gcc${GCCSVN_VER}-all${PGOTAG}"
         echo
-        rpm -qa --changelog "gcc${GCCSVN_VER}-all"
+        rpm -qa --changelog "gcc${GCCSVN_VER}-all${PGOTAG}"
         echo
     fi
 
@@ -734,10 +733,6 @@ case "$1" in
             echo "" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             echo "Total GCC Install Time: $INSTALLTIME seconds" >> "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             tail -2 "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
-        ;;
-    * )
-        echo "Usage:"
-        echo "$0 {install|install7|install8|installgcc|installgcc7|installgcc8|binutils7|binutils8}"
         ;;
     installpgogcc7 )
         GCCSVN_VER='7'
