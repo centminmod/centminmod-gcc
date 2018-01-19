@@ -355,7 +355,9 @@ install_gcc() {
     if [[ "$GCC_PGO" = [yY] && "$BOOTCFLAGS" != [yY] ]]; then
         PGOTAG='-pgo'
         BOOTCFLAGS='y'
-    else
+    elif [[ "$GCC_PGO" = [yY] && "$BOOTCFLAGS" = [yY] ]]; then
+        PGOTAG='-pgo'
+    elif [[ "$GCC_PGO" != [yY] ]]; then
         PGOTAG=""
     fi
 
