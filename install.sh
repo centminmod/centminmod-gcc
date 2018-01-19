@@ -7,6 +7,7 @@
 # https://gist.github.com/centminmod/f825b26676eab0240d3049d2e7d1c688
 # http://wiki.osdev.org/GCC_Cross-Compiler#Binutils
 ################################################
+VER='0.1'
 DT=$(date +"%d%m%y-%H%M%S")
 BUILTRPM='y'
 
@@ -26,7 +27,7 @@ GCC_GOLD='y'
 # using profiledbootstrap
 # https://gcc.gnu.org/install/build.html
 GCC_PGO='n'
-BOOTCFLAGS='n'
+BOOTCFLAGS='y'
 BINUTILS_VER='2.29.1'
 
 # GCC Downloads
@@ -79,12 +80,11 @@ return
 ################################################
 CENTOSVER=$(awk '{ print $3 }' /etc/redhat-release)
 
-if [[ "$GCC_PGO" = [yY] ]]; then
+if [[ "$GCC_PGO" = [yY] && "$BOOTCFLAGS" != [yY] ]]; then
     PGOTAG='-pgo'
     BOOTCFLAGS='y'
 else
     PGOTAG=""
-    BOOTCFLAGS='n'
 fi
 
 if [[ "$GCC_LTO" = [yY] ]]; then
@@ -151,19 +151,48 @@ else
     MAKETHREADS=" -j$CPUS"
 fi
 
+die() {
+    echo "error: $@" >&2
+    exit 1
+}
+
 download_prereq() {
     echo
-    echo "downloading from ftp://gcc.gnu.org/pub/gcc/infrastructure/"
+    echo "downloading from https://github.com/centminmod/gcc-infrastructure/raw/master/"
     rm -rf ${GMP_FILE}
     rm -rf ${ISL_FILE}
     rm -rf ${MPC_FILE}
     rm -rf ${MPFR_FILE}
-    wget --no-verbose -O ./${GMP_FILE} ftp://gcc.gnu.org/pub/gcc/infrastructure/${GMP_FILE}
-    wget --no-verbose -O ./${ISL_FILE} ftp://gcc.gnu.org/pub/gcc/infrastructure/${ISL_FILE}
-    wget --no-verbose -O ./${MPC_FILE} ftp://gcc.gnu.org/pub/gcc/infrastructure/${MPC_FILE}
-    wget --no-verbose -O ./${MPFR_FILE} ftp://gcc.gnu.org/pub/gcc/infrastructure/${MPFR_FILE}
+    wget --no-verbose -O ./${GMP_FILE} https://github.com/centminmod/gcc-infrastructure/raw/master/${GMP_FILE}
+    wget --no-verbose -O ./${ISL_FILE} https://github.com/centminmod/gcc-infrastructure/raw/master/${ISL_FILE}
+    wget --no-verbose -O ./${MPC_FILE} https://github.com/centminmod/gcc-infrastructure/raw/master/${MPC_FILE}
+    wget --no-verbose -O ./${MPFR_FILE} https://github.com/centminmod/gcc-infrastructure/raw/master/${MPFR_FILE}
     echo
     ls -lah ${GMP_FILE} ${ISL_FILE} ${MPC_FILE} ${MPFR_FILE}
+    echo
+    echo "creating symlinks for gmp, isl, mpc, mpf"
+    directory=$(pwd)
+    echo "directory=$directory"
+    echo_archives="${GMP_FILE} ${ISL_FILE} ${MPC_FILE} ${MPFR_FILE}"
+    for ar in ${echo_archives[@]}; do
+        package="${ar%.tar*}"
+        echo "extracting $package ..."
+        if [[ ! -d "$package" ]]; then
+            ( cd "${directory}" && tar -xf "${ar}" ) || die "Cannot extract package from ${ar}"
+        fi
+    done
+    unset ar
+    for ar in ${echo_archives[@]}; do
+        target="${directory}/${ar%.tar*}/"
+        linkname="${ar%-*}"
+        echo "$linkname"
+        rm -f "${linkname}"
+        [ -e "${linkname}" ]                                                      \
+            || ln -s "${target}" "${linkname}"                                    \
+            || die "Cannot create symbolic link ${linkname} --> ${target}"
+        unset target linkname
+    done
+    unset ar
     echo
 }
 
@@ -319,14 +348,14 @@ install_gcc() {
     if [[ -f /opt/rh/devtoolset-7/root/usr/bin/gcc && -f /opt/rh/devtoolset-7/root/usr/bin/g++ ]]; then
         GCCSEVEN='y'
         source /opt/rh/devtoolset-7/enable
-        GCCCFLAGS="'${OPT_LEVEL} -Wimplicit-fallthrough=0 -Wno-maybe-uninitialized'"
+        GCCCFLAGS="-g ${OPT_LEVEL} -Wimplicit-fallthrough=0 -Wno-maybe-uninitialized"
         # export CXXFLAGS="${CFLAGS}"
         GCC_COMPILEOPTS="${GCC_COMPILEOPTS}${LTO_OPT}${GOLD_OPT}"
     else
         scl_install
         GCCSEVEN='y'
         source /opt/rh/devtoolset-7/enable
-        GCCCFLAGS="'${OPT_LEVEL} -Wimplicit-fallthrough=0 -Wno-maybe-uninitialized'"
+        GCCCFLAGS="-g ${OPT_LEVEL} -Wimplicit-fallthrough=0 -Wno-maybe-uninitialized"
         # export CXXFLAGS="${CFLAGS}"
         GCC_COMPILEOPTS="${GCC_COMPILEOPTS}${LTO_OPT}${GOLD_OPT}"
     fi
@@ -412,18 +441,18 @@ install_gcc() {
     fi
     echo
     if [[ "$GCC_PGO" = [yY] ]]; then
-        if [[ "$BOOTCFLAGS" = [yY] && "$GCCSEVEN" = [Yy] ]]; then
+        if [[ "$GCC_PGO" = [yY] && "$BOOTCFLAGS" = [yY] && "$GCCSEVEN" = [Yy] ]]; then
             echo "time make${MAKETHREADS} profiledbootstrap BOOT_CFLAGS='${GCCCFLAGS}' CFLAGS_FOR_TARGET='${GCCCFLAGS}'"
-            time make${MAKETHREADS} profiledbootstrap BOOT_CFLAGS="'${GCCCFLAGS}'" CFLAGS_FOR_TARGET="'${GCCCFLAGS}'"
-        else
+            time make${MAKETHREADS} profiledbootstrap BOOT_CFLAGS="${GCCCFLAGS}" CFLAGS_FOR_TARGET="${GCCCFLAGS}"
+        elif [[ "$GCC_PGO" = [yY] && "$BOOTCFLAGS" != [yY] && "$GCCSEVEN" = [Yy] ]]; then
             echo "time make${MAKETHREADS} profiledbootstrap"
             time make${MAKETHREADS} profiledbootstrap
         fi
     else
         if [[ "$BOOTCFLAGS" = [yY] && "$GCCSEVEN" = [Yy] ]]; then
             echo "time make${MAKETHREADS} BOOT_CFLAGS='${GCCCFLAGS}' CFLAGS_FOR_TARGET='${GCCCFLAGS}'"
-            time make${MAKETHREADS} BOOT_CFLAGS="'${GCCCFLAGS}'" CFLAGS_FOR_TARGET="'${GCCCFLAGS}'"
-        else
+            time make${MAKETHREADS} BOOT_CFLAGS="${GCCCFLAGS}" CFLAGS_FOR_TARGET="${GCCCFLAGS}"
+        elif [[ "$BOOTCFLAGS" != [yY] && "$GCCSEVEN" = [Yy] ]]; then
             echo "time make${MAKETHREADS}"
             time make${MAKETHREADS}
         fi
