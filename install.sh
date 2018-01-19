@@ -460,6 +460,7 @@ install_gcc() {
     if [[ "$BUILTRPM" = [Yy] ]]; then
         echo "create GCC RPM package"
         rm -rf /home/fpmtmp/gcc_installdir
+        rpm -e gcc${GCCSVN_VER}-all
         rpm -e gcc${GCCSVN_VER}-all${PGOTAG}
         echo "mkdir -p /home/fpmtmp/gcc_installdir"
         mkdir -p /home/fpmtmp/gcc_installdir
