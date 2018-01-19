@@ -3,6 +3,7 @@ Work In Progress
 
 * GCC 7.x & 8.x compiler work for [CentminMod.com](https://community.centminmod.com/threads/13726/)
 * CentOS 7.x only
+* Optional support for Profile Guided Optimization based GCC builds for ~7-10% better performance for resulting binaries built
 
 GCC 7
 ===

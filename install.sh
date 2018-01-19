@@ -10,6 +10,9 @@
 VER='0.1'
 DT=$(date +"%d%m%y-%H%M%S")
 BUILTRPM='y'
+# whether to test install the RPMs build
+# or just build RPMs without installing
+GCC_YUMINSTALL='n'
 
 # SVN GCC 7 or 8
 GCCSVN_VER='8'
@@ -300,9 +303,11 @@ binutils_install() {
         echo
         BINUTIL_RPMPATH="$(pwd)/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm"
         ls -lah "$BINUTIL_RPMPATH"
-        echo
-        echo "yum -y localinstall binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm"
-        yum -y localinstall binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm
+        if [[ "$GCC_YUMINSTALL" = [yY] ]]; then
+            echo
+            echo "yum -y localinstall binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm"
+            yum -y localinstall binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm
+        fi
     else
         time make install
     fi
@@ -497,9 +502,11 @@ echo -e "* $(date +"%a %b %d %Y") George Liu <centminmod.com> ${GCCSVN_VER}\n - 
         echo
         GCCRPM_PATH="$(pwd)/gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm"
         ls -lah "$GCCRPM_PATH"
-        echo
-        echo "yum -y localinstall gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm"
-        yum -y localinstall gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm
+        if [[ "$GCC_YUMINSTALL" = [yY] ]]; then
+            echo
+            echo "yum -y localinstall gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm"
+            yum -y localinstall gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm
+        fi
     else
         echo "time make install"
         time make install
@@ -570,14 +577,16 @@ EOF
         fi
         echo "ls -lah $DIR_TMP | egrep 'gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm'"
         ls -lah "$DIR_TMP" | egrep "gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm"
-        echo
-        yum -q info "binutils-gcc${GCCSVN_VER}"
-        echo
-        rpm -qa --changelog "binutils-gcc${GCCSVN_VER}"
-        echo
-        yum -q info "gcc${GCCSVN_VER}-all${PGOTAG}"
-        echo
-        rpm -qa --changelog "gcc${GCCSVN_VER}-all${PGOTAG}"
+        if [[ "$GCC_YUMINSTALL" = [yY] ]]; then
+            echo
+            yum -q info "binutils-gcc${GCCSVN_VER}"
+            echo
+            rpm -qa --changelog "binutils-gcc${GCCSVN_VER}"
+            echo
+            yum -q info "gcc${GCCSVN_VER}-all${PGOTAG}"
+            echo
+            rpm -qa --changelog "gcc${GCCSVN_VER}-all${PGOTAG}"
+        fi
         echo
     fi
 
