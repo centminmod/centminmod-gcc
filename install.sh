@@ -495,35 +495,35 @@ fi
 EOF
         chmod +x remove_symlink.sh
 
+        # strip large binaries
+        echo
+        ls -lah "/home/fpmtmp/gcc_installdir${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/cc1plus"
+        echo
+        strip "/home/fpmtmp/gcc_installdir${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/cc1plus"
+        echo
+        ls -lah "/home/fpmtmp/gcc_installdir${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/cc1plus"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/gcc_installdir${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/cc1"
+        echo
+        strip "/home/fpmtmp/gcc_installdir${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/cc1"
+        echo
+        ls -lah "/home/fpmtmp/gcc_installdir${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/cc1"
+        echo
+
+        echo
+        ls -lah "/home/fpmtmp/gcc_installdir${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/lto1"
+        echo
+        strip "/home/fpmtmp/gcc_installdir${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/lto1"
+        echo
+        ls -lah "/home/fpmtmp/gcc_installdir${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/lto1"
+        echo
+
 echo -e "* $(date +"%a %b %d %Y") George Liu <centminmod.com> ${GCCSVN_VER}\n - GCC ${GCCSVN_VER} for centminmod.com LEMP stack installs" > "gcc${GCCSVN_VER}-changelog"
 
         echo "fpm -s dir -t rpm -n gcc${GCCSVN_VER}-all${PGOTAG} -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog \"gcc${GCCSVN_VER}-changelog\" --rpm-summary \"gcc${GCCSVN_VER}-all${PGOTAG} for centminmod.com LEMP stack installs\" --after-install symlink.sh --before-remove remove_symlink.sh -C /home/fpmtmp/gcc_installdir"
         time fpm -s dir -t rpm -n gcc${GCCSVN_VER}-all${PGOTAG} -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog "gcc${GCCSVN_VER}-changelog" --rpm-summary "gcc${GCCSVN_VER}-all${PGOTAG} for centminmod.com LEMP stack installs" --after-install symlink.sh --before-remove remove_symlink.sh -C /home/fpmtmp/gcc_installdir
-        echo
-
-        # strip large binaries
-        echo
-        ls -lah "/home/fpmtmp/gcc_installdir/${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/cc1plus"
-        echo
-        strip "/home/fpmtmp/gcc_installdir/${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/cc1plus"
-        echo
-        ls -lah "/home/fpmtmp/gcc_installdir/${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/cc1plus"
-        echo
-
-        echo
-        ls -lah "/home/fpmtmp/gcc_installdir/${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/cc1"
-        echo
-        strip "/home/fpmtmp/gcc_installdir/${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/cc1"
-        echo
-        ls -lah "/home/fpmtmp/gcc_installdir/${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/cc1"
-        echo
-
-        echo
-        ls -lah "/home/fpmtmp/gcc_installdir/${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/lto1"
-        echo
-        strip "/home/fpmtmp/gcc_installdir/${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/lto1"
-        echo
-        ls -lah "/home/fpmtmp/gcc_installdir/${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/lto1"
         echo
 
         GCCRPM_PATH="$(pwd)/gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm"
