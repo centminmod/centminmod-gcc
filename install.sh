@@ -276,9 +276,9 @@ binutils_install() {
         wget -cnv "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.gz"
         tar xvzf "binutils-${BINUTILS_VER}.tar.gz"
     fi
-    rm -rf gold.binutils
-    mkdir -p gold.binutils
-    cd gold.binutils
+    rm -rf gold.binutils${GCCSVN_VER}
+    mkdir -p gold.binutils${GCCSVN_VER}
+    cd gold.binutils${GCCSVN_VER}
     ../binutils-${BINUTILS_VER}/configure --prefix="$GCC_PREFIX" --enable-lto --enable-gold --enable-plugins --disable-nls --disable-werror
     time make${MAKETHREADS} all-gold
     time make${MAKETHREADS}
