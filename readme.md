@@ -8,13 +8,10 @@ Work In Progress
 Build both GCC 7 & GCC 8 RPMs (both PGO + non-PGO) and accompanying Binutils RPMs all at once
 
 ```
-./install-all.sh
-
-ls -lah /svr-setup | egrep 'gcc[7,8]-all|binutils-gcc'
--rw-r--r--    1 root      root       123M Jan 19 07:58 gcc7-all-7.2.1-1.x86_64.rpm
--rw-r--r--    1 root      root       133M Jan 19 08:28 gcc7-all-pgo-7.2.1-1.x86_64.rpm
--rw-r--r--    1 root      root       149M Jan 19 08:57 gcc8-all-8.0-1.x86_64.rpm
--rw-r--r--    1 root      root       162M Jan 19 09:38 gcc8-all-pgo-8.0-1.x86_64.rpm
-
-Total Run Time: 7585.843712054 seconds
+-rw-r--r--   1 root  root   37M Jan 19 10:01 binutils-gcc7-2.29.1-1.x86_64.rpm
+-rw-r--r--   1 root  root   37M Jan 19 10:07 binutils-gcc8-2.29.1-1.x86_64.rpm
+-rw-r--r--   1 root  root  123M Jan 19 07:58 gcc7-all-7.2.1-1.x86_64.rpm
+-rw-r--r--   1 root  root  133M Jan 19 08:28 gcc7-all-pgo-7.2.1-1.x86_64.rpm
+-rw-r--r--   1 root  root  149M Jan 19 08:57 gcc8-all-8.0-1.x86_64.rpm
+-rw-r--r--   1 root  root  162M Jan 19 09:38 gcc8-all-pgo-8.0-1.x86_64.rpm
 ```
