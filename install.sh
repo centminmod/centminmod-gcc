@@ -140,7 +140,7 @@ else
     if [[ "$CPUS" -gt '8' ]]; then
         CPUS=$(echo $(($CPUS+4)))
     elif [[ "$CPUS" -eq '8' ]]; then
-        CPUS=$(echo $(($CPUS+2)))
+        CPUS=$(echo $(($CPUS+1)))
     else
         CPUS=$(echo $(($CPUS+1)))
     fi
