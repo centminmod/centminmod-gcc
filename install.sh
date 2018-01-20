@@ -299,10 +299,6 @@ binutils_install() {
             echo "rm -rf /home/fpmtmp/binutils_installdir${GCC_PREFIX}/share/info/dir"
             rm -rf "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/share/info/dir"
         fi
-        # remove files
-        if [ -d "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu" ]; then
-            rm -rf "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu"
-        fi
         if [ -f /usr/bin/xz ]; then
             FPMCOMPRESS_OPT='--rpm-compression xz'
         else
@@ -333,6 +329,11 @@ binutils_install() {
             ls -lah "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/bin/$bb"
             echo
         done
+
+        # remove files
+        if [ -d "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu" ]; then
+            rm -rf "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu"
+        fi
 
         echo -e "* $(date +"%a %b %d %Y") George Liu <centminmod.com> $BINUTILS_VER\n - Binutils $BINUTILS_VER for centminmod.com LEMP stack installs" > "binutils-gcc${GCCSVN_VER}-changelog"
 
