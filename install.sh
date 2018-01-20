@@ -51,6 +51,7 @@ CENTMINLOGDIR='/root/centminlogs'
 GCC_SNAPSHOTSEVEN='http://www.netgull.com/gcc/snapshots/LATEST-7/'
 GCC_SNAPSHOTEIGHT='http://www.netgull.com/gcc/snapshots/LATEST-8/'
 GCC_COMPILEOPTS='--enable-bootstrap --enable-plugin --with-gcc-major-version-only --enable-shared --disable-nls --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-install-libiberty --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++ --enable-initfini-array --disable-libgcj --enable-gnu-indirect-function --with-tune=generic --build=x86_64-redhat-linux'
+SCRIPT_DIR=$(readlink -f $(dirname ${BASH_SOURCE[0]}))
 ################################################
 # Setup Colours
 black='\E[30;40m'
@@ -288,16 +289,17 @@ binutils_install() {
     time make${MAKETHREADS}
     if [[ "$BUILTRPM" = [Yy] ]]; then
         echo "create GCC RPM package"
-        rm -rf /home/fpmtmp/binutils_installdir
+        BINUTIL_RPMINSTALLDIR="/home/fpmtmp/binutils${GCCSVN_VER}_installdir"
+        rm -rf $BINUTIL_RPMINSTALLDIR
         rpm -e binutils-gcc${GCCSVN_VER}
-        echo "mkdir -p /home/fpmtmp/binutils_installdir"
-        mkdir -p /home/fpmtmp/binutils_installdir
-        echo "time make install DESTDIR=/home/fpmtmp/binutils_installdir"
-        time make install DESTDIR=/home/fpmtmp/binutils_installdir
+        echo "mkdir -p $BINUTIL_RPMINSTALLDIR"
+        mkdir -p $BINUTIL_RPMINSTALLDIR
+        echo "time make install DESTDIR=$BINUTIL_RPMINSTALLDIR"
+        time make install DESTDIR=$BINUTIL_RPMINSTALLDIR
         # remove conflicting file with gcc
-        if [ -f "rm -rf /home/fpmtmp/binutils_installdir${GCC_PREFIX}/share/info/dir" ]; then
-            echo "rm -rf /home/fpmtmp/binutils_installdir${GCC_PREFIX}/share/info/dir"
-            rm -rf "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/share/info/dir"
+        if [ -f "rm -rf $BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/share/info/dir" ]; then
+            echo "rm -rf $BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/share/info/dir"
+            rm -rf "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/share/info/dir"
         fi
         if [ -f /usr/bin/xz ]; then
             FPMCOMPRESS_OPT='--rpm-compression xz'
@@ -308,13 +310,13 @@ binutils_install() {
         # strip binaries
         binbin_list='ar as ld ld.gold ld.bfd nm objcopy objdump ranlib readelf strip'
         for b in ${binbin_list[@]}; do
-            if [ -f "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b" ]; then
+            if [ -f "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b" ]; then
                 echo
-                ls -lah "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b"
+                ls -lah "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b"
                 echo
-                strip "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b"
+                strip "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b"
                 echo
-                ls -lah "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b"
+                ls -lah "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b"
                 echo
             fi
         done
@@ -322,30 +324,45 @@ binutils_install() {
         binbinb_list='addr2line dwp size strings gprof c++filt elfedit'
         for bb in ${binbinb_list[@]}; do
             echo
-            ls -lah "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/bin/$bb"
+            ls -lah "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/bin/$bb"
             echo
-            strip "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/bin/$bb"
+            strip "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/bin/$bb"
             echo
-            ls -lah "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/bin/$bb"
+            ls -lah "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/bin/$bb"
             echo
         done
 
         # remove files
-        if [ -d "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu" ]; then
-            rm -rf "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu"
+        if [ -d "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/x86_64-pc-linux-gnu" ]; then
+            rm -rf "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/x86_64-pc-linux-gnu"
         fi
 
         echo -e "* $(date +"%a %b %d %Y") George Liu <centminmod.com> $BINUTILS_VER\n - Binutils $BINUTILS_VER for centminmod.com LEMP stack installs" > "binutils-gcc${GCCSVN_VER}-changelog"
 
-        echo "fpm -f -s dir -t rpm -n binutils-gcc${GCCSVN_VER} -v $BINUTILS_VER $FPMCOMPRESS_OPT --rpm-changelog \"binutils-gcc${GCCSVN_VER}-changelog\" --rpm-summary \"binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stack installs\" --rpm-dist ${DISTTAG}  -m \"<centminmod.com>\" --description \"binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stacks\" --url https://centminmod.com -C /home/fpmtmp/binutils_installdir"
-        time fpm -f -s dir -t rpm -n binutils-gcc${GCCSVN_VER} -v $BINUTILS_VER $FPMCOMPRESS_OPT --rpm-changelog "binutils-gcc${GCCSVN_VER}-changelog" --rpm-summary "binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stack installs" --rpm-dist ${DISTTAG}  -m "<centminmod.com>" --description "binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stacks" --url https://centminmod.com -C /home/fpmtmp/binutils_installdir
+        echo "fpm -f -s dir -t rpm -n binutils-gcc${GCCSVN_VER} -v $BINUTILS_VER $FPMCOMPRESS_OPT --rpm-changelog \"binutils-gcc${GCCSVN_VER}-changelog\" --rpm-summary \"binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stack installs\" --rpm-dist ${DISTTAG}  -m \"<centminmod.com>\" --description \"binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stacks\" --url https://centminmod.com --rpm-autoreqprov -p $DIR_TMP -C $BINUTIL_RPMINSTALLDIR" | tee "${SCRIPT_DIR}/binutils-gcc${GCCSVN_VER}-fpm-cmd"
+        time fpm -f -s dir -t rpm -n binutils-gcc${GCCSVN_VER} -v $BINUTILS_VER $FPMCOMPRESS_OPT --rpm-changelog "binutils-gcc${GCCSVN_VER}-changelog" --rpm-summary "binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stack installs" --rpm-dist ${DISTTAG}  -m "<centminmod.com>" --description "binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stacks" --url https://centminmod.com --rpm-autoreqprov -p $DIR_TMP -C $BINUTIL_RPMINSTALLDIR
+
+        # check provides and requires
         echo
-        BINUTIL_RPMPATH="$(pwd)/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm"
+        echo "-------------------------------------------------------------------------------------"
+        echo "rpm -qp --provides \"${DIR_TMP}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm\""
+        rpm -qp --provides "${DIR_TMP}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm"
+        echo "-------------------------------------------------------------------------------------"
+        echo
+        
+        echo
+        echo "-------------------------------------------------------------------------------------"
+        echo "rpm -qp --requires \"${DIR_TMP}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm\""
+        rpm -qp --requires "${DIR_TMP}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm"
+        echo "-------------------------------------------------------------------------------------"
+        echo
+
+        BINUTIL_RPMPATH="${DIR_TMP}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm"
         ls -lah "$BINUTIL_RPMPATH"
         if [[ "$GCC_YUMINSTALL" = [yY] ]]; then
             echo
-            echo "yum -y localinstall binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm"
-            yum -y localinstall binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm
+            echo "yum -y localinstall ${DIR_TMP}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm"
+            yum -y localinstall ${DIR_TMP}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm
         fi
     else
         time make install
@@ -507,16 +524,17 @@ install_gcc() {
     echo
     if [[ "$BUILTRPM" = [Yy] ]]; then
         echo "create GCC RPM package"
-        rm -rf /home/fpmtmp/gcc_installdir
+        GCC_RPMINSTALLDIR="/home/fpmtmp/gcc${GCCSVN_VER}_installdir"
+        rm -rf $GCC_RPMINSTALLDIR
         rpm -e gcc${GCCSVN_VER}
         rpm -e gcc${GCCSVN_VER}${PGOTAG}
-        echo "mkdir -p /home/fpmtmp/gcc_installdir"
-        mkdir -p /home/fpmtmp/gcc_installdir
-        echo "time make install DESTDIR=/home/fpmtmp/gcc_installdir"
-        time make install DESTDIR=/home/fpmtmp/gcc_installdir
+        echo "mkdir -p $GCC_RPMINSTALLDIR"
+        mkdir -p $GCC_RPMINSTALLDIR
+        echo "time make install DESTDIR=$GCC_RPMINSTALLDIR"
+        time make install DESTDIR=$GCC_RPMINSTALLDIR
         # remove conflicting file with binutils
-        echo "rm -rf /home/fpmtmp/gcc_installdir${GCC_PREFIX}/share/info/dir"
-        rm -rf /home/fpmtmp/gcc_installdir${GCC_PREFIX}/share/info/dir
+        echo "rm -rf $GCC_RPMINSTALLDIR${GCC_PREFIX}/share/info/dir"
+        rm -rf $GCC_RPMINSTALLDIR${GCC_PREFIX}/share/info/dir
         if [ -f /usr/bin/xz ]; then
             FPMCOMPRESS_OPT='--rpm-compression xz'
         else
@@ -541,37 +559,51 @@ EOF
         ginbin_list='cc1plus cc1 lto1'
         for g in ${ginbin_list[@]}; do
           echo
-          ls -lah "/home/fpmtmp/gcc_installdir${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/$g"
+          ls -lah "$GCC_RPMINSTALLDIR${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/$g"
           echo
-          strip "/home/fpmtmp/gcc_installdir${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/$g"
+          strip "$GCC_RPMINSTALLDIR${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/$g"
           echo
-          ls -lah "/home/fpmtmp/gcc_installdir${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/$g"
+          ls -lah "$GCC_RPMINSTALLDIR${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/$g"
           echo
         done
 
         ginrootbin_list='c++ cpp g++ gcc gcc-ar gcc-nm gcc-ranlib gcov gcov-dump gcov-tool x86_64-redhat-linux-c++ x86_64-redhat-linux-g++ x86_64-redhat-linux-gcc x86_64-redhat-linux-gcc-7'
         for gg in ${ginrootbin_list[@]}; do
           echo
-          ls -lah "/home/fpmtmp/gcc_installdir${GCC_PREFIX}/bin/$gg"
+          ls -lah "$GCC_RPMINSTALLDIR${GCC_PREFIX}/bin/$gg"
           echo
-          strip "/home/fpmtmp/gcc_installdir${GCC_PREFIX}/bin/$gg"
+          strip "$GCC_RPMINSTALLDIR${GCC_PREFIX}/bin/$gg"
           echo
-          ls -lah "/home/fpmtmp/gcc_installdir${GCC_PREFIX}/bin/$gg"
+          ls -lah "$GCC_RPMINSTALLDIR${GCC_PREFIX}/bin/$gg"
           echo
         done
 
         echo -e "* $(date +"%a %b %d %Y") George Liu <centminmod.com> ${GCCSVN_VER}\n - GCC ${GCCSVN_VER} for centminmod.com LEMP stack installs" > "gcc${GCCSVN_VER}-changelog"
 
-        echo "fpm -f -s dir -t rpm -n gcc${GCCSVN_VER}${PGOTAG} -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog \"gcc${GCCSVN_VER}-changelog\" --rpm-summary \"gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stack installs\" --after-install symlink.sh --before-remove remove_symlink.sh --rpm-dist ${DISTTAG}  -m \"<centminmod.com>\"  --description \"gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stacks\" --url https://centminmod.com -C /home/fpmtmp/gcc_installdir"
-        time fpm -f -s dir -t rpm -n gcc${GCCSVN_VER}${PGOTAG} -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog "gcc${GCCSVN_VER}-changelog" --rpm-summary "gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stack installs" --after-install symlink.sh --before-remove remove_symlink.sh --rpm-dist ${DISTTAG}  -m "<centminmod.com>"  --description "gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stacks" --url https://centminmod.com -C /home/fpmtmp/gcc_installdir
+        echo "fpm -f -s dir -t rpm -n gcc${GCCSVN_VER}${PGOTAG} -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog \"gcc${GCCSVN_VER}-changelog\" --rpm-summary \"gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stack installs\" --after-install symlink.sh --before-remove remove_symlink.sh --rpm-dist ${DISTTAG}  -m \"<centminmod.com>\"  --description \"gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stacks\" --url https://centminmod.com --rpm-autoreqprov -p $DIR_TMP -C $GCC_RPMINSTALLDIR" | tee "${SCRIPT_DIR}/gcc${GCCSVN_VER}${PGOTAG}-fpm-cmd"
+        time fpm -f -s dir -t rpm -n gcc${GCCSVN_VER}${PGOTAG} -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog "gcc${GCCSVN_VER}-changelog" --rpm-summary "gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stack installs" --after-install symlink.sh --before-remove remove_symlink.sh --rpm-dist ${DISTTAG}  -m "<centminmod.com>"  --description "gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stacks" --url https://centminmod.com --rpm-autoreqprov -p $DIR_TMP -C $GCC_RPMINSTALLDIR
+
+        # check provides and requires
+        echo
+        echo "-------------------------------------------------------------------------------------"
+        echo "rpm -qp --provides \"${DIR_TMP}/gcc${GCCSVN_VER}${PGOTAG}-${GCCFPM_VER}-1.${DISTTAG}.x86_64.rpm\""
+        rpm -qp --provides "${DIR_TMP}/gcc${GCCSVN_VER}${PGOTAG}-${GCCFPM_VER}-1.${DISTTAG}.x86_64.rpm"
+        echo "-------------------------------------------------------------------------------------"
+        echo
+        
+        echo
+        echo "-------------------------------------------------------------------------------------"
+        echo "rpm -qp --requires \"${DIR_TMP}/gcc${GCCSVN_VER}${PGOTAG}-${GCCFPM_VER}-1.${DISTTAG}.x86_64.rpm\""
+        rpm -qp --requires "${DIR_TMP}/gcc${GCCSVN_VER}${PGOTAG}-${GCCFPM_VER}-1.${DISTTAG}.x86_64.rpm"
+        echo "-------------------------------------------------------------------------------------"
         echo
 
-        GCCRPM_PATH="$(pwd)/gcc${GCCSVN_VER}${PGOTAG}-${GCCFPM_VER}-1.${DISTTAG}.x86_64.rpm"
+        GCCRPM_PATH="${DIR_TMP}/gcc${GCCSVN_VER}${PGOTAG}-${GCCFPM_VER}-1.${DISTTAG}.x86_64.rpm"
         ls -lah "$GCCRPM_PATH"
         if [[ "$GCC_YUMINSTALL" = [yY] ]]; then
             echo
-            echo "yum -y localinstall gcc${GCCSVN_VER}${PGOTAG}-${GCCFPM_VER}-1.${DISTTAG}.x86_64.rpm"
-            yum -y localinstall gcc${GCCSVN_VER}${PGOTAG}-${GCCFPM_VER}-1.${DISTTAG}.x86_64.rpm
+            echo "yum -y localinstall ${DIR_TMP}/gcc${GCCSVN_VER}${PGOTAG}-${GCCFPM_VER}-1.${DISTTAG}.x86_64.rpm"
+            yum -y localinstall ${DIR_TMP}/gcc${GCCSVN_VER}${PGOTAG}-${GCCFPM_VER}-1.${DISTTAG}.x86_64.rpm
         fi
     else
         echo "time make install"
@@ -633,18 +665,8 @@ EOF
     if [[ "$BUILTRPM" = [Yy] ]]; then
         echo
         echo "RPMs Built"
-        echo "${DIR_TMP}/gold.binutils${GCCSVN_VER}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm"
+        echo "$BINUTIL_RPMPATH"
         echo "$GCCRPM_PATH"
-        echo
-        echo "moved to: $DIR_TMP"
-        if [ -f "${DIR_TMP}/gold.binutils${GCCSVN_VER}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm" ]; then
-            echo "mv -f "${DIR_TMP}/gold.binutils${GCCSVN_VER}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm" "$DIR_TMP""
-            mv -f "${DIR_TMP}/gold.binutils${GCCSVN_VER}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm" "$DIR_TMP"
-        fi
-        if [ -f "$GCCRPM_PATH" ]; then
-            echo "mv -f "$GCCRPM_PATH" "$DIR_TMP""
-            mv -f "$GCCRPM_PATH" "$DIR_TMP"
-        fi
         echo
         echo "ls -lah $DIR_TMP | egrep 'gcc${GCCSVN_VER}${PGOTAG}-${GCCFPM_VER}|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}'"
         ls -lah "$DIR_TMP" | egrep "gcc${GCCSVN_VER}${PGOTAG}-${GCCFPM_VER}|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}"
