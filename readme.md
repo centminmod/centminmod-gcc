@@ -37,12 +37,15 @@ RPMs
 Build both GCC 7 & GCC 8 RPMs (both PGO + non-PGO) and accompanying Binutils RPMs all at once
 
 ```
--rw-r--r--   1 root  root   37M Jan 19 10:01 binutils-gcc7-2.29.1-1.x86_64.rpm
--rw-r--r--   1 root  root   37M Jan 19 10:07 binutils-gcc8-2.29.1-1.x86_64.rpm
--rw-r--r--   1 root  root  123M Jan 19 07:58 gcc7-all-7.2.1-1.x86_64.rpm
--rw-r--r--   1 root  root  133M Jan 19 08:28 gcc7-all-pgo-7.2.1-1.x86_64.rpm
--rw-r--r--   1 root  root  149M Jan 19 08:57 gcc8-all-8.0-1.x86_64.rpm
--rw-r--r--   1 root  root  162M Jan 19 09:38 gcc8-all-pgo-8.0-1.x86_64.rpm
+ls -lah /svr-setup | egrep 'gcc[7,8]-all|binutils-gcc' | grep rpm
+-rw-r--r--    1 root      root       5.6M Jan 20 02:11 binutils-gcc7-2.29.1-1.x86_64.rpm
+-rw-r--r--    1 root      root       5.6M Jan 20 03:01 binutils-gcc8-2.29.1-1.x86_64.rpm
+-rw-r--r--    1 root      root        35M Jan 20 02:32 gcc7-all-7.2.1-1.x86_64.rpm
+-rw-r--r--    1 root      root        39M Jan 20 03:00 gcc7-all-pgo-7.2.1-1.x86_64.rpm
+-rw-r--r--    1 root      root        39M Jan 20 03:23 gcc8-all-8.0-1.x86_64.rpm
+-rw-r--r--    1 root      root        44M Jan 20 04:01 gcc8-all-pgo-8.0-1.x86_64.rpm
+
+Total Run Time: 6732.971081094 seconds
 ```
 
 GCC 7
