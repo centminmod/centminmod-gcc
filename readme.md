@@ -1,7 +1,8 @@
-Work In Progress
+GCC 7 & 8 Compiler Scripts
 ===
 
-* GCC 7.x & 8.x compiler work for [CentminMod.com](https://community.centminmod.com/threads/13726/)
+* GCC 7.x & 8.x compiler & Binutils build scripts for install and creation of RPMs for [CentminMod.com](https://community.centminmod.com/threads/13726/) LEMP stacks
+* GCC 7.x & 8.x snapshots are built from sources at [http://www.netgull.com/gcc/snapshots/LATEST-7/](http://www.netgull.com/gcc/snapshots/LATEST-7/) and [http://www.netgull.com/gcc/snapshots/LATEST-8/](http://www.netgull.com/gcc/snapshots/LATEST-8/) respectively using CentOS SCL devtoolset-7 provided GCC 7.2.1 compiler.
 * CentOS 7.x only
 * Optional support for Profile Guided Optimization based GCC builds for ~7-10% better performance for resulting binaries built
 
