@@ -720,31 +720,36 @@ EOF
     echo "${GCC_PREFIX}/bin/ld.bfd -v"
     "${GCC_PREFIX}/bin/ld.bfd" -v
 
-    echo
-    echo "${GCC_PREFIX}/bin/gcc --version"
-    "${GCC_PREFIX}/bin/gcc" --version
-
-    echo
-    echo "${GCC_PREFIX}/bin/g++ --version"
-    "${GCC_PREFIX}/bin/g++" --version
-
-    echo
-    echo "${GCC_PREFIX}/bin/gcc -v"
-    "${GCC_PREFIX}/bin/gcc" -v
+    if [[ "$GCC_YUMINSTALL" = [yY] ]]; then
+        echo
+        echo "${GCC_PREFIX}/bin/gcc --version"
+        "${GCC_PREFIX}/bin/gcc" --version
+    
+        echo
+        echo "${GCC_PREFIX}/bin/g++ --version"
+        "${GCC_PREFIX}/bin/g++" --version
+    
+        echo
+        echo "${GCC_PREFIX}/bin/gcc -v"
+        "${GCC_PREFIX}/bin/gcc" -v
+    fi
 
     if [[ "$BUILTRPM" = [Yy] ]]; then
         echo
         echo "RPMs Built"
-        echo "$BINUTIL_RPMPATH"
+        echo "${DIR_TMP}/gold.binutils${GCCSVN_VER}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm"
         echo "$GCCRPM_PATH"
         echo
         echo "moved to: $DIR_TMP"
-        if [ -f "$BINUTIL_RPMPATH" ]; then
-            mv -f "$BINUTIL_RPMPATH" "$DIR_TMP"
+        if [ -f "${DIR_TMP}/gold.binutils${GCCSVN_VER}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm" ]; then
+            echo "mv -f "${DIR_TMP}/gold.binutils${GCCSVN_VER}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm" "$DIR_TMP""
+            mv -f "${DIR_TMP}/gold.binutils${GCCSVN_VER}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm" "$DIR_TMP"
         fi
         if [ -f "$GCCRPM_PATH" ]; then
+            echo "mv -f "$GCCRPM_PATH" "$DIR_TMP""
             mv -f "$GCCRPM_PATH" "$DIR_TMP"
         fi
+        echo
         echo "ls -lah $DIR_TMP | egrep 'gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm'"
         ls -lah "$DIR_TMP" | egrep "gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm"
         if [[ "$GCC_YUMINSTALL" = [yY] ]]; then
