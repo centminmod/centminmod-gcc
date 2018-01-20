@@ -7,9 +7,14 @@
 # https://gist.github.com/centminmod/f825b26676eab0240d3049d2e7d1c688
 # http://wiki.osdev.org/GCC_Cross-Compiler#Binutils
 ################################################
-VER='0.1'
+VER='0.2'
 DT=$(date +"%d%m%y-%H%M%S")
+DIR_TMP='/svr-setup'
+
+# RPM related
 BUILTRPM='y'
+DISTTAG='el7'
+RPMSAVE_PATH="$DIR_TMP"
 # whether to test install the RPMs build
 # or just build RPMs without installing
 GCC_YUMINSTALL='n'
@@ -42,7 +47,6 @@ MPFR_FILE='mpfr-3.1.4.tar.bz2'
 CLANG_FOUR='n'
 OPT_LEVEL=-O2
 CCACHE='y'
-DIR_TMP='/svr-setup'
 CENTMINLOGDIR='/root/centminlogs'
 GCC_SNAPSHOTSEVEN='http://www.netgull.com/gcc/snapshots/LATEST-7/'
 GCC_SNAPSHOTEIGHT='http://www.netgull.com/gcc/snapshots/LATEST-8/'
@@ -321,15 +325,15 @@ binutils_install() {
 
         echo -e "* $(date +"%a %b %d %Y") George Liu <centminmod.com> $BINUTILS_VER\n - Binutils $BINUTILS_VER for centminmod.com LEMP stack installs" > "binutils-gcc${GCCSVN_VER}-changelog"
 
-        echo "fpm -s dir -t rpm -n binutils-gcc${GCCSVN_VER} -v $BINUTILS_VER $FPMCOMPRESS_OPT --rpm-changelog \"binutils-gcc${GCCSVN_VER}-changelog\" --rpm-summary \"Binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stack installs\" -C /home/fpmtmp/binutils_installdir"
-        time fpm -s dir -t rpm -n binutils-gcc${GCCSVN_VER} -v $BINUTILS_VER $FPMCOMPRESS_OPT --rpm-changelog "binutils-gcc${GCCSVN_VER}-changelog" --rpm-summary "Binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stack installs" -C /home/fpmtmp/binutils_installdir
+        echo "fpm -f -s dir -t rpm -n binutils-gcc${GCCSVN_VER} -v $BINUTILS_VER $FPMCOMPRESS_OPT --rpm-changelog \"binutils-gcc${GCCSVN_VER}-changelog\" --rpm-summary \"binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stack installs\" --rpm-dist ${DISTTAG}  -m \"<centminmod.com>\" --description \"binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stacks\" --url https://centminmod.com -C /home/fpmtmp/binutils_installdir"
+        time fpm -f -s dir -t rpm -n binutils-gcc${GCCSVN_VER} -v $BINUTILS_VER $FPMCOMPRESS_OPT --rpm-changelog "binutils-gcc${GCCSVN_VER}-changelog" --rpm-summary "binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stack installs" --rpm-dist ${DISTTAG}  -m "<centminmod.com>" --description "binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stacks" --url https://centminmod.com -C /home/fpmtmp/binutils_installdir
         echo
-        BINUTIL_RPMPATH="$(pwd)/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm"
+        BINUTIL_RPMPATH="$(pwd)/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm"
         ls -lah "$BINUTIL_RPMPATH"
         if [[ "$GCC_YUMINSTALL" = [yY] ]]; then
             echo
-            echo "yum -y localinstall binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm"
-            yum -y localinstall binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm
+            echo "yum -y localinstall binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm"
+            yum -y localinstall binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm
         fi
     else
         time make install
@@ -492,8 +496,8 @@ install_gcc() {
     if [[ "$BUILTRPM" = [Yy] ]]; then
         echo "create GCC RPM package"
         rm -rf /home/fpmtmp/gcc_installdir
-        rpm -e gcc${GCCSVN_VER}-all
-        rpm -e gcc${GCCSVN_VER}-all${PGOTAG}
+        rpm -e gcc${GCCSVN_VER}
+        rpm -e gcc${GCCSVN_VER}${PGOTAG}
         echo "mkdir -p /home/fpmtmp/gcc_installdir"
         mkdir -p /home/fpmtmp/gcc_installdir
         echo "time make install DESTDIR=/home/fpmtmp/gcc_installdir"
@@ -534,16 +538,16 @@ EOF
 
         echo -e "* $(date +"%a %b %d %Y") George Liu <centminmod.com> ${GCCSVN_VER}\n - GCC ${GCCSVN_VER} for centminmod.com LEMP stack installs" > "gcc${GCCSVN_VER}-changelog"
 
-        echo "fpm -s dir -t rpm -n gcc${GCCSVN_VER}-all${PGOTAG} -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog \"gcc${GCCSVN_VER}-changelog\" --rpm-summary \"gcc${GCCSVN_VER}-all${PGOTAG} for centminmod.com LEMP stack installs\" --after-install symlink.sh --before-remove remove_symlink.sh -C /home/fpmtmp/gcc_installdir"
-        time fpm -s dir -t rpm -n gcc${GCCSVN_VER}-all${PGOTAG} -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog "gcc${GCCSVN_VER}-changelog" --rpm-summary "gcc${GCCSVN_VER}-all${PGOTAG} for centminmod.com LEMP stack installs" --after-install symlink.sh --before-remove remove_symlink.sh -C /home/fpmtmp/gcc_installdir
+        echo "fpm -f -s dir -t rpm -n gcc${GCCSVN_VER}${PGOTAG} -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog \"gcc${GCCSVN_VER}-changelog\" --rpm-summary \"gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stack installs\" --after-install symlink.sh --before-remove remove_symlink.sh --rpm-dist ${DISTTAG}  -m \"<centminmod.com>\"  --description \"gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stacks\" --url https://centminmod.com -C /home/fpmtmp/gcc_installdir"
+        time fpm -f -s dir -t rpm -n gcc${GCCSVN_VER}${PGOTAG} -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog "gcc${GCCSVN_VER}-changelog" --rpm-summary "gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stack installs" --after-install symlink.sh --before-remove remove_symlink.sh --rpm-dist ${DISTTAG}  -m "<centminmod.com>"  --description "gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stacks" --url https://centminmod.com -C /home/fpmtmp/gcc_installdir
         echo
 
-        GCCRPM_PATH="$(pwd)/gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm"
+        GCCRPM_PATH="$(pwd)/gcc${GCCSVN_VER}${PGOTAG}-${GCCFPM_VER}-1.${DISTTAG}.x86_64.rpm"
         ls -lah "$GCCRPM_PATH"
         if [[ "$GCC_YUMINSTALL" = [yY] ]]; then
             echo
-            echo "yum -y localinstall gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm"
-            yum -y localinstall gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm
+            echo "yum -y localinstall gcc${GCCSVN_VER}${PGOTAG}-${GCCFPM_VER}-1.${DISTTAG}.x86_64.rpm"
+            yum -y localinstall gcc${GCCSVN_VER}${PGOTAG}-${GCCFPM_VER}-1.${DISTTAG}.x86_64.rpm
         fi
     else
         echo "time make install"
@@ -605,30 +609,30 @@ EOF
     if [[ "$BUILTRPM" = [Yy] ]]; then
         echo
         echo "RPMs Built"
-        echo "${DIR_TMP}/gold.binutils${GCCSVN_VER}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm"
+        echo "${DIR_TMP}/gold.binutils${GCCSVN_VER}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm"
         echo "$GCCRPM_PATH"
         echo
         echo "moved to: $DIR_TMP"
-        if [ -f "${DIR_TMP}/gold.binutils${GCCSVN_VER}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm" ]; then
-            echo "mv -f "${DIR_TMP}/gold.binutils${GCCSVN_VER}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm" "$DIR_TMP""
-            mv -f "${DIR_TMP}/gold.binutils${GCCSVN_VER}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm" "$DIR_TMP"
+        if [ -f "${DIR_TMP}/gold.binutils${GCCSVN_VER}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm" ]; then
+            echo "mv -f "${DIR_TMP}/gold.binutils${GCCSVN_VER}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm" "$DIR_TMP""
+            mv -f "${DIR_TMP}/gold.binutils${GCCSVN_VER}/binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.${DISTTAG}.x86_64.rpm" "$DIR_TMP"
         fi
         if [ -f "$GCCRPM_PATH" ]; then
             echo "mv -f "$GCCRPM_PATH" "$DIR_TMP""
             mv -f "$GCCRPM_PATH" "$DIR_TMP"
         fi
         echo
-        echo "ls -lah $DIR_TMP | egrep 'gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm'"
-        ls -lah "$DIR_TMP" | egrep "gcc${GCCSVN_VER}-all${PGOTAG}-${GCCFPM_VER}-1.x86_64.rpm|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}-1.x86_64.rpm"
+        echo "ls -lah $DIR_TMP | egrep 'gcc${GCCSVN_VER}${PGOTAG}-${GCCFPM_VER}|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}'"
+        ls -lah "$DIR_TMP" | egrep "gcc${GCCSVN_VER}${PGOTAG}-${GCCFPM_VER}|binutils-gcc${GCCSVN_VER}-${BINUTILS_VER}"
         if [[ "$GCC_YUMINSTALL" = [yY] ]]; then
             echo
             yum -q info "binutils-gcc${GCCSVN_VER}"
             echo
             rpm -qa --changelog "binutils-gcc${GCCSVN_VER}"
             echo
-            yum -q info "gcc${GCCSVN_VER}-all${PGOTAG}"
+            yum -q info "gcc${GCCSVN_VER}${PGOTAG}"
             echo
-            rpm -qa --changelog "gcc${GCCSVN_VER}-all${PGOTAG}"
+            rpm -qa --changelog "gcc${GCCSVN_VER}${PGOTAG}"
         fi
         echo
     fi
