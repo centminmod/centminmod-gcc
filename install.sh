@@ -294,6 +294,15 @@ binutils_install() {
         mkdir -p /home/fpmtmp/binutils_installdir
         echo "time make install DESTDIR=/home/fpmtmp/binutils_installdir"
         time make install DESTDIR=/home/fpmtmp/binutils_installdir
+        # remove conflicting file with gcc
+        if [ -f "rm -rf /home/fpmtmp/binutils_installdir${GCC_PREFIX}/share/info/dir" ]; then
+            echo "rm -rf /home/fpmtmp/binutils_installdir${GCC_PREFIX}/share/info/dir"
+            rm -rf "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/share/info/dir"
+        fi
+        # remove files
+        if [ -d "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu" ]; then
+            rm -rf "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu"
+        fi
         if [ -f /usr/bin/xz ]; then
             FPMCOMPRESS_OPT='--rpm-compression xz'
         else
@@ -303,13 +312,15 @@ binutils_install() {
         # strip binaries
         binbin_list='ar as ld ld.gold ld.bfd nm objcopy objdump ranlib readelf strip'
         for b in ${binbin_list[@]}; do
-            echo
-            ls -lah "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b"
-            echo
-            strip "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b"
-            echo
-            ls -lah "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b"
-            echo
+            if [ -f "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b" ]; then
+                echo
+                ls -lah "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b"
+                echo
+                strip "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b"
+                echo
+                ls -lah "/home/fpmtmp/binutils_installdir${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b"
+                echo
+            fi
         done
 
         binbinb_list='addr2line dwp size strings gprof c++filt elfedit'
@@ -503,6 +514,7 @@ install_gcc() {
         echo "time make install DESTDIR=/home/fpmtmp/gcc_installdir"
         time make install DESTDIR=/home/fpmtmp/gcc_installdir
         # remove conflicting file with binutils
+        echo "rm -rf /home/fpmtmp/gcc_installdir${GCC_PREFIX}/share/info/dir"
         rm -rf /home/fpmtmp/gcc_installdir${GCC_PREFIX}/share/info/dir
         if [ -f /usr/bin/xz ]; then
             FPMCOMPRESS_OPT='--rpm-compression xz'
