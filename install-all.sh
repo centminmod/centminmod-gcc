@@ -7,11 +7,12 @@ DT=$(date +"%d%m%y-%H%M%S")
 DIR_TMP='/svr-setup'
 CENTMINLOGDIR='/root/centminlogs'
 GCC_PGO='y'
+GCC_SEVENONLY='n'
 GCC_EIGHTONLY='n'
 
 build() {
 if [[ -f install.sh ]]; then
-  if [[ "$GCC_EIGHTONLY" != [yY] ]]; then
+  if [[ "$GCC_SEVENONLY" = [yY] || "$GCC_EIGHTONLY" != [yY] ]]; then
     echo
     echo "----------------------------------------------------------------"
     echo "./install.sh binutils7"
@@ -30,21 +31,23 @@ if [[ -f install.sh ]]; then
     fi
   fi
 
-  echo
-  echo "----------------------------------------------------------------"
-  echo "./install.sh binutils8"
-  ./install.sh binutils8
-
-  echo
-  echo "----------------------------------------------------------------"
-  echo "./install.sh installgcc8"
-  ./install.sh installgcc8
-
-  if [[ "$GCC_PGO" = [yY] ]]; then
+  if [[ "$GCC_EIGHTONLY" = [yY] || "$GCC_SEVENONLY" != [yY] ]]; then
     echo
     echo "----------------------------------------------------------------"
-    echo "./install.sh installpgogcc8"
-    ./install.sh installpgogcc8
+    echo "./install.sh binutils8"
+    ./install.sh binutils8
+  
+    echo
+    echo "----------------------------------------------------------------"
+    echo "./install.sh installgcc8"
+    ./install.sh installgcc8
+  
+    if [[ "$GCC_PGO" = [yY] ]]; then
+      echo
+      echo "----------------------------------------------------------------"
+      echo "./install.sh installpgogcc8"
+      ./install.sh installpgogcc8
+    fi
   fi
 fi
 
