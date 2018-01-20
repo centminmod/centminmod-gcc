@@ -549,6 +549,17 @@ EOF
           echo
         done
 
+        ginrootbin_list='c++ cpp g++ gcc gcc-ar gcc-nm gcc-ranlib gcov gcov-dump gcov-tool x86_64-redhat-linux-c++ x86_64-redhat-linux-g++ x86_64-redhat-linux-gcc x86_64-redhat-linux-gcc-7'
+        for gg in ${ginrootbin_list[@]}; do
+          echo
+          ls -lah "/home/fpmtmp/gcc_installdir${GCC_PREFIX}/bin/$gg"
+          echo
+          strip "/home/fpmtmp/gcc_installdir${GCC_PREFIX}/bin/$gg"
+          echo
+          ls -lah "/home/fpmtmp/gcc_installdir${GCC_PREFIX}/bin/$gg"
+          echo
+        done
+
         echo -e "* $(date +"%a %b %d %Y") George Liu <centminmod.com> ${GCCSVN_VER}\n - GCC ${GCCSVN_VER} for centminmod.com LEMP stack installs" > "gcc${GCCSVN_VER}-changelog"
 
         echo "fpm -f -s dir -t rpm -n gcc${GCCSVN_VER}${PGOTAG} -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog \"gcc${GCCSVN_VER}-changelog\" --rpm-summary \"gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stack installs\" --after-install symlink.sh --before-remove remove_symlink.sh --rpm-dist ${DISTTAG}  -m \"<centminmod.com>\"  --description \"gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stacks\" --url https://centminmod.com -C /home/fpmtmp/gcc_installdir"
