@@ -121,6 +121,12 @@ RPMs
 Build both GCC 7 & GCC 8 RPMs (both PGO + non-PGO) and accompanying Binutils RPMs all at once
 
 ```
+./install-all.sh
+```
+
+resulting RPMs saved in `/svr-setup` directory
+
+```
 ls -lah /svr-setup | egrep 'gcc[7,8]-all|binutils-gcc' | grep rpm
 -rw-r--r--   1 root  root  5.2M Jan 20 13:24 binutils-gcc7-2.29.1-1.el7.x86_64.rpm
 -rw-r--r--   1 root  root  5.2M Jan 20 12:17 binutils-gcc8-2.29.1-1.el7.x86_64.rpm
