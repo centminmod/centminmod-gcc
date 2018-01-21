@@ -181,6 +181,33 @@ Description : gcc8-pgo for centminmod.com LEMP stacks
 ```
 
 ```
+rpm -qp --provides /svr-setup/binutils-gcc8-2.29.1-1.el7.x86_64.rpm 
+binutils-gcc8 = 2.29.1-1.el7
+binutils-gcc8(x86-64) = 2.29.1-1.el7
+```
+
+```
+rpm -qp --requires /svr-setup/binutils-gcc8-2.29.1-1.el7.x86_64.rpm         
+ld-linux-x86-64.so.2()(64bit)
+ld-linux-x86-64.so.2(GLIBC_2.3)(64bit)
+libc.so.6()(64bit)
+libc.so.6(GLIBC_2.10)(64bit)
+libc.so.6(GLIBC_2.11)(64bit)
+libc.so.6(GLIBC_2.14)(64bit)
+libc.so.6(GLIBC_2.2.5)(64bit)
+libc.so.6(GLIBC_2.3)(64bit)
+libc.so.6(GLIBC_2.4)(64bit)
+libdl.so.2()(64bit)
+libdl.so.2(GLIBC_2.2.5)(64bit)
+libm.so.6()(64bit)
+rpmlib(CompressedFileNames) <= 3.0.4-1
+rpmlib(PartialHardlinkSets) <= 4.0.4-1
+rpmlib(PayloadFilesHavePrefix) <= 4.0-1
+rtld(GNU_HASH)
+rpmlib(PayloadIsXz) <= 5.2-1
+```
+
+```
 rpm -qp --provides "/svr-setup/gcc8-pgo-8.0-1.el7.x86_64.rpm"
 gcc8-pgo = 8.0-1.el7
 gcc8-pgo(x86-64) = 8.0-1.el7
