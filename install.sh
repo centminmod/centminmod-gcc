@@ -312,10 +312,13 @@ binutils_install() {
         for b in ${binbin_list[@]}; do
             if [ -f "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b" ]; then
                 echo
+                echo "ls -lah "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b""
                 ls -lah "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b"
                 echo
+                echo "strip "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b""
                 strip "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b"
                 echo
+                echo "ls -lah "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b""
                 ls -lah "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/x86_64-pc-linux-gnu/bin/$b"
                 echo
             fi
@@ -324,10 +327,13 @@ binutils_install() {
         binbinb_list='addr2line dwp size strings gprof c++filt elfedit'
         for bb in ${binbinb_list[@]}; do
             echo
+            echo "ls -lah "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/bin/$bb""
             ls -lah "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/bin/$bb"
             echo
+            echo "strip "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/bin/$bb""
             strip "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/bin/$bb"
             echo
+            echo "ls -lah "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/bin/$bb""
             ls -lah "$BINUTIL_RPMINSTALLDIR${GCC_PREFIX}/bin/$bb"
             echo
         done
@@ -559,21 +565,27 @@ EOF
         ginbin_list='cc1plus cc1 lto1'
         for g in ${ginbin_list[@]}; do
           echo
+          echo "ls -lah "$GCC_RPMINSTALLDIR${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/$g""
           ls -lah "$GCC_RPMINSTALLDIR${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/$g"
           echo
+          echo "strip "$GCC_RPMINSTALLDIR${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/$g""
           strip "$GCC_RPMINSTALLDIR${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/$g"
           echo
+          echo "ls -lah "$GCC_RPMINSTALLDIR${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/$g""
           ls -lah "$GCC_RPMINSTALLDIR${GCC_PREFIX}/libexec/gcc/x86_64-redhat-linux/${GCCSVN_VER}/$g"
           echo
         done
 
-        ginrootbin_list='c++ cpp g++ gcc gcc-ar gcc-nm gcc-ranlib gcov gcov-dump gcov-tool x86_64-redhat-linux-c++ x86_64-redhat-linux-g++ x86_64-redhat-linux-gcc x86_64-redhat-linux-gcc-7'
+        ginrootbin_list="c++ cpp g++ gcc gcc-ar gcc-nm gcc-ranlib gcov gcov-dump gcov-tool x86_64-redhat-linux-c++ x86_64-redhat-linux-g++ x86_64-redhat-linux-gcc x86_64-redhat-linux-gcc-${GCCSVN_VER}"
         for gg in ${ginrootbin_list[@]}; do
           echo
+          echo "ls -lah "$GCC_RPMINSTALLDIR${GCC_PREFIX}/bin/$gg""
           ls -lah "$GCC_RPMINSTALLDIR${GCC_PREFIX}/bin/$gg"
           echo
+          echo "strip "$GCC_RPMINSTALLDIR${GCC_PREFIX}/bin/$gg""
           strip "$GCC_RPMINSTALLDIR${GCC_PREFIX}/bin/$gg"
           echo
+          echo "ls -lah "$GCC_RPMINSTALLDIR${GCC_PREFIX}/bin/$gg""
           ls -lah "$GCC_RPMINSTALLDIR${GCC_PREFIX}/bin/$gg"
           echo
         done
