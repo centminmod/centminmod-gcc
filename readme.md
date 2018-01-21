@@ -149,3 +149,188 @@ ls -lah /svr-setup | egrep 'gcc[7,8]|binutils-gcc' | grep rpm
 
 Total Run Time: 6771.610319117 seconds
 ```
+
+```
+yum info binutils-gcc8 -q
+Installed Packages
+Name        : binutils-gcc8
+Arch        : x86_64
+Version     : 2.29.1
+Release     : 1.el7
+Size        : 47 M
+Repo        : installed
+Summary     : binutils-gcc8 for centminmod.com LEMP stack installs
+URL         : https://centminmod.com
+License     : unknown
+Description : binutils-gcc8 for centminmod.com LEMP stacks
+```
+
+```
+yum info gcc8-pgo -q
+Installed Packages
+Name        : gcc8-pgo
+Arch        : x86_64
+Version     : 8.0
+Release     : 1.el7
+Size        : 308 M
+Repo        : installed
+Summary     : gcc8-pgo for centminmod.com LEMP stack installs
+URL         : https://centminmod.com
+License     : unknown
+Description : gcc8-pgo for centminmod.com LEMP stacks
+```
+
+```
+rpm -qp --provides "/svr-setup/gcc8-pgo-8.0-1.el7.x86_64.rpm"
+gcc8-pgo = 8.0-1.el7
+gcc8-pgo(x86-64) = 8.0-1.el7
+libasan.so.5()(64bit)
+libatomic.so.1()(64bit)
+libatomic.so.1(LIBATOMIC_1.0)(64bit)
+libatomic.so.1(LIBATOMIC_1.1)(64bit)
+libatomic.so.1(LIBATOMIC_1.2)(64bit)
+libcc1.so.0()(64bit)
+libcc1plugin.so.0()(64bit)
+libcp1plugin.so.0()(64bit)
+libgomp.so.1()(64bit)
+libgomp.so.1(GOACC_2.0)(64bit)
+libgomp.so.1(GOACC_2.0.1)(64bit)
+libgomp.so.1(GOMP_1.0)(64bit)
+libgomp.so.1(GOMP_2.0)(64bit)
+libgomp.so.1(GOMP_3.0)(64bit)
+libgomp.so.1(GOMP_4.0)(64bit)
+libgomp.so.1(GOMP_4.0.1)(64bit)
+libgomp.so.1(GOMP_4.5)(64bit)
+libgomp.so.1(GOMP_PLUGIN_1.0)(64bit)
+libgomp.so.1(GOMP_PLUGIN_1.1)(64bit)
+libgomp.so.1(OACC_2.0)(64bit)
+libgomp.so.1(OACC_2.0.1)(64bit)
+libgomp.so.1(OMP_1.0)(64bit)
+libgomp.so.1(OMP_2.0)(64bit)
+libgomp.so.1(OMP_3.0)(64bit)
+libgomp.so.1(OMP_3.1)(64bit)
+libgomp.so.1(OMP_4.0)(64bit)
+libgomp.so.1(OMP_4.5)(64bit)
+libitm.so.1()(64bit)
+libitm.so.1(LIBITM_1.0)(64bit)
+libitm.so.1(LIBITM_1.1)(64bit)
+liblsan.so.0()(64bit)
+liblto_plugin.so.0()(64bit)
+libmpx.so.2()(64bit)
+libmpx.so.2(LIBMPX_1.0)(64bit)
+libmpx.so.2(LIBMPX_2.0)(64bit)
+libmpxwrappers.so.2()(64bit)
+libmpxwrappers.so.2(LIBMPXWRAPPERS_1.0)(64bit)
+libquadmath.so.0()(64bit)
+libquadmath.so.0(QUADMATH_1.0)(64bit)
+libquadmath.so.0(QUADMATH_1.1)(64bit)
+libssp.so.0()(64bit)
+libssp.so.0(LIBSSP_1.0)(64bit)
+libstdc++.so.6()(64bit)
+libstdc++.so.6(CXXABI_1.3)(64bit)
+libstdc++.so.6(CXXABI_1.3.1)(64bit)
+libstdc++.so.6(CXXABI_1.3.10)(64bit)
+libstdc++.so.6(CXXABI_1.3.11)(64bit)
+libstdc++.so.6(CXXABI_1.3.2)(64bit)
+libstdc++.so.6(CXXABI_1.3.3)(64bit)
+libstdc++.so.6(CXXABI_1.3.4)(64bit)
+libstdc++.so.6(CXXABI_1.3.5)(64bit)
+libstdc++.so.6(CXXABI_1.3.6)(64bit)
+libstdc++.so.6(CXXABI_1.3.7)(64bit)
+libstdc++.so.6(CXXABI_1.3.8)(64bit)
+libstdc++.so.6(CXXABI_1.3.9)(64bit)
+libstdc++.so.6(CXXABI_FLOAT128)(64bit)
+libstdc++.so.6(CXXABI_TM_1)(64bit)
+libstdc++.so.6(GLIBCXX_3.4)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.1)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.10)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.11)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.12)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.13)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.14)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.15)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.16)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.17)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.18)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.19)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.2)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.20)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.21)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.22)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.23)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.24)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.25)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.3)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.4)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.5)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.6)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.7)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.8)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.9)(64bit)
+libtsan.so.0()(64bit)
+libubsan.so.1()(64bit)
+```
+
+```
+rpm -qp --requires "/svr-setup/gcc8-pgo-8.0-1.el7.x86_64.rpm"
+/bin/sh
+/bin/sh
+/bin/sh
+ld-linux-x86-64.so.2()(64bit)
+ld-linux-x86-64.so.2(GLIBC_2.2.5)(64bit)
+ld-linux-x86-64.so.2(GLIBC_2.3)(64bit)
+libasan.so.5()(64bit)
+libatomic.so.1()(64bit)
+libc.so.6()(64bit)
+libc.so.6(GLIBC_2.10)(64bit)
+libc.so.6(GLIBC_2.11)(64bit)
+libc.so.6(GLIBC_2.14)(64bit)
+libc.so.6(GLIBC_2.16)(64bit)
+libc.so.6(GLIBC_2.17)(64bit)
+libc.so.6(GLIBC_2.2.5)(64bit)
+libc.so.6(GLIBC_2.3)(64bit)
+libc.so.6(GLIBC_2.3.2)(64bit)
+libc.so.6(GLIBC_2.3.3)(64bit)
+libc.so.6(GLIBC_2.6)(64bit)
+libcc1.so.0()(64bit)
+libcc1plugin.so.0()(64bit)
+libcp1plugin.so.0()(64bit)
+libdl.so.2()(64bit)
+libdl.so.2(GLIBC_2.2.5)(64bit)
+libgcc_s.so.1()(64bit)
+libgcc_s.so.1(GCC_3.0)(64bit)
+libgcc_s.so.1(GCC_3.3)(64bit)
+libgcc_s.so.1(GCC_4.2.0)(64bit)
+libgomp.so.1()(64bit)
+libitm.so.1()(64bit)
+liblsan.so.0()(64bit)
+liblto_plugin.so.0()(64bit)
+libm.so.6()(64bit)
+libm.so.6(GLIBC_2.2.5)(64bit)
+libmpx.so.2()(64bit)
+libmpxwrappers.so.2()(64bit)
+libpthread.so.0()(64bit)
+libpthread.so.0(GLIBC_2.2.5)(64bit)
+libpthread.so.0(GLIBC_2.3.3)(64bit)
+libpthread.so.0(GLIBC_2.3.4)(64bit)
+libquadmath.so.0()(64bit)
+librt.so.1()(64bit)
+librt.so.1(GLIBC_2.2.5)(64bit)
+libssp.so.0()(64bit)
+libstdc++.so.6()(64bit)
+libstdc++.so.6(CXXABI_1.3)(64bit)
+libstdc++.so.6(CXXABI_1.3.8)(64bit)
+libstdc++.so.6(CXXABI_1.3.9)(64bit)
+libstdc++.so.6(GLIBCXX_3.4)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.20)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.21)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.9)(64bit)
+libtsan.so.0()(64bit)
+libubsan.so.1()(64bit)
+libz.so.1()(64bit)
+rpmlib(CompressedFileNames) <= 3.0.4-1
+rpmlib(PartialHardlinkSets) <= 4.0.4-1
+rpmlib(PayloadFilesHavePrefix) <= 4.0-1
+rtld(GNU_HASH)
+rpmlib(PayloadIsXz) <= 5.2-1
+```
