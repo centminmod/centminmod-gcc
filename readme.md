@@ -136,14 +136,16 @@ Build both GCC 7 & GCC 8 RPMs (both PGO + non-PGO) and accompanying Binutils RPM
 ./install-all.sh
 ```
 
-resulting RPMs saved in `/svr-setup` directory
+resulting RPMs saved in `/svr-setup` directory built on Intel Core i7 4790K
 
 ```
-ls -lah /svr-setup | egrep 'gcc[7,8]-all|binutils-gcc' | grep rpm
--rw-r--r--   1 root  root  5.2M Jan 20 13:24 binutils-gcc7-2.29.1-1.el7.x86_64.rpm
--rw-r--r--   1 root  root  5.2M Jan 20 12:17 binutils-gcc8-2.29.1-1.el7.x86_64.rpm
--rw-r--r--   1 root  root   33M Jan 20 16:41 gcc7-7.2.1-1.el7.x86_64.rpm
--rw-r--r--   1 root  root   37M Jan 20 17:09 gcc7-pgo-7.2.1-1.el7.x86_64.rpm
--rw-r--r--   1 root  root   36M Jan 20 16:09 gcc8-8.0-1.el7.x86_64.rpm
--rw-r--r--   1 root  root   41M Jan 20 17:46 gcc8-pgo-8.0-1.el7.x86_64.rpm
+ls -lah /svr-setup | egrep 'gcc[7,8]|binutils-gcc' | grep rpm
+-rw-r--r--    1 root      root       5.2M Jan 21 03:37 binutils-gcc7-2.29.1-1.el7.x86_64.rpm
+-rw-r--r--    1 root      root       5.2M Jan 21 04:28 binutils-gcc8-2.29.1-1.el7.x86_64.rpm
+-rw-r--r--    1 root      root        33M Jan 21 04:00 gcc7-7.2.1-1.el7.x86_64.rpm
+-rw-r--r--    1 root      root        37M Jan 21 04:27 gcc7-pgo-7.2.1-1.el7.x86_64.rpm
+-rw-r--r--    1 root      root        36M Jan 21 04:51 gcc8-8.0-1.el7.x86_64.rpm
+-rw-r--r--    1 root      root        40M Jan 21 05:29 gcc8-pgo-8.0-1.el7.x86_64.rpm
+
+Total Run Time: 6771.610319117 seconds
 ```
