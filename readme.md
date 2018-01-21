@@ -17,49 +17,49 @@ Usage:
 ./install.sh {install|install7|install8|installpgo7|installpgo8|installgcc|installgcc7|installgcc8|installpgogcc7|installpgogcc8|binutils7|binutils8}
 ```
 
-Build GCC 8 RPM + Binutils RPM Only without installing. If you want to install the RPM too set in install.sh the variable `GCC_YUMINSTALL='y'`
+Build GCC 8 RPM + Binutils RPM Only and `without` installing. If you want to install the RPM too set in `install.sh` the variable `GCC_YUMINSTALL='y'`
 
 ```
 ./install.sh install8
 ```
 
-Build GCC 7 RPM + Binutils RPM Only without installing. If you want to install the RPM too set in install.sh the variable `GCC_YUMINSTALL='y'`
+Build GCC 7 RPM + Binutils RPM Only and `without` installing. If you want to install the RPM too set in `install.sh` the variable `GCC_YUMINSTALL='y'`
 
 ```
 ./install.sh install7
 ```
 
-Build GCC 8 RPM only without Binutils RPM without installing. If you want to install the RPM too set in install.sh the variable `GCC_YUMINSTALL='y'`
+Build GCC 8 RPM only without Binutils RPM and `without` installing. If you want to install the RPM too set in `install.sh` the variable `GCC_YUMINSTALL='y'`
 
 ```
 ./install.sh installgcc8
 ```
 
-Build GCC 7 RPM only without Binutils RPM without installing. If you want to install the RPM too set in install.sh the variable `GCC_YUMINSTALL='y'`
+Build GCC 7 RPM only without Binutils RPM and `without` installing. If you want to install the RPM too set in `install.sh` the variable `GCC_YUMINSTALL='y'`
 
 ```
 ./install.sh installgcc7
 ```
 
-Build GCC 8 RPM only with PGO enabled without Binutils RPM without installing. If you want to install the RPM too set in install.sh the variable `GCC_YUMINSTALL='y'`
+Build GCC 8 RPM only with PGO enabled without Binutils RPM and `without` installing. If you want to install the RPM too set in `install.sh` the variable `GCC_YUMINSTALL='y'`
 
 ```
 ./install.sh installpgogcc8
 ```
 
-Build GCC 7 RPM only with PGO enabled without Binutils RPM without installing. If you want to install the RPM too set in install.sh the variable `GCC_YUMINSTALL='y'`
+Build GCC 7 RPM only with PGO enabled without Binutils RPM and `without` installing. If you want to install the RPM too set in `install.sh` the variable `GCC_YUMINSTALL='y'`
 
 ```
 ./install.sh installpgogcc7
 ```
 
-Build Binutils RPM Only without GCC RPM without installing. If you want to install the RPM too set in install.sh the variable `GCC_YUMINSTALL='y'`
+Build Binutils RPM Only without GCC RPM and `without` installing. If you want to install the RPM too set in `install.sh` the variable `GCC_YUMINSTALL='y'`
 
 ```
 ./install.sh binutils8
 ```
 
-Build Binutils RPM Only without GCC RPM without installing. If you want to install the RPM too set in install.sh the variable `GCC_YUMINSTALL='y'`
+Build Binutils RPM Only without GCC RPM and `without` installing. If you want to install the RPM too set in `install.sh` the variable `GCC_YUMINSTALL='y'`
 
 ```
 ./install.sh binutils7
