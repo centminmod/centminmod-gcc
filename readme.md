@@ -65,8 +65,11 @@ Build Binutils RPM Only without GCC RPM and `without` installing. If you want to
 ./install.sh binutils7
 ```
 
-GCC 7 & 8 Usage
+GCC 8 Usage
 ===
+
+* `/opt/gcc-8-20180111` is symlinked to `/opt/gcc8` for easier reference as the GCC snapshot date timestamped builds increment
+* Using `/opt/gcc8/enable` allows you to set PATH appropriately. Example gcc binary is at `/opt/gcc8/bin/gcc` but with source file enabled, can reference just as `gcc`
 
 ```
 source /opt/gcc8/enable
@@ -91,12 +94,18 @@ Thread model: posix
 gcc version 8.0.0 20180114 (experimental) (GCC) 
 ```
 
+GCC 7 Usage
+===
+
+* `/opt/gcc-7-20180111` is symlinked to `/opt/gcc7` for easier reference as the GCC snapshot date timestamped builds increment
+* Using `/opt/gcc7/enable` allows you to set PATH appropriately. Example gcc binary is at `/opt/gcc7/bin/gcc` but with source file enabled, can reference just as `gcc`
+
 ```
 source /opt/gcc7/enable
 ```
 
 ```
-/opt/gcc7/bin/gcc -v    
+gcc -v    
 Using built-in specs.
 COLLECT_GCC=/opt/gcc7/bin/gcc
 COLLECT_LTO_WRAPPER=/opt/gcc-7-20180111/libexec/gcc/x86_64-redhat-linux/7/lto-wrapper
