@@ -1,7 +1,7 @@
 ```
 yum -y install texinfo flex-devel gmp-devel mpfr-devel libmpc-devel bison-devel gcc-gnat
-yum -y localinstall /svr-setup/gcc-all-8.0-1.x86_64.rpm
-yum -y localinstall /svr-setup/binutils-custom-2.29.1-1.x86_64.rpm
+yum -y localinstall /svr-setup/binutils-gcc8-2.29.1-1.el7.x86_64.rpm
+yum -y localinstall /svr-setup/gcc8-8.0-1.el7.x86_64.rpm
 ```
 
 ```
