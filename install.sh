@@ -884,7 +884,9 @@ case "$1" in
             tail -2 "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
         ;;
     * )
+        echo
         echo "Usage:"
+        echo
         echo "$0 {install|install7|install8|installpgo7|installpgo8|installgcc|installgcc7|installgcc8|installpgogcc7|installpgogcc8|binutils7|binutils8}"
         ;;
 esac
