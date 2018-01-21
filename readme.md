@@ -6,6 +6,63 @@ GCC 7 & 8 Compiler Scripts
 * CentOS 7.x only
 * Optional support for Profile Guided Optimization based GCC builds for ~7-10% better performance for resulting binaries built
 
+Command Line Usage for install.sh
+===
+
+```
+./install.sh
+Usage:
+./install.sh {install|install7|install8|installpgo7|installpgo8|installgcc|installgcc7|installgcc8|installpgogcc7|installpgogcc8|binutils7|binutils8}
+```
+
+Build GCC 8 RPM + Binutils RPM Only without installing
+
+```
+./install.sh install8
+```
+
+Build GCC 7 RPM + Binutils RPM Only without installing
+
+```
+./install.sh install7
+```
+
+Build GCC 8 RPM only without Binutils RPM without installing
+
+```
+./install.sh installgcc8
+```
+
+Build GCC 7 RPM only without Binutils RPM without installing
+
+```
+./install.sh installgcc7
+```
+
+Build GCC 8 RPM only with PGO enabled without Binutils RPM without installing
+
+```
+./install.sh installpgogcc8
+```
+
+Build GCC 7 RPM only with PGO enabled without Binutils RPM without installing
+
+```
+./install.sh installpgogcc7
+```
+
+Build Binutils RPM Only without GCC RPM without installing
+
+```
+./install.sh binutils8
+```
+
+Build Binutils RPM Only without GCC RPM without installing
+
+```
+./install.sh binutils7
+```
+
 Usage
 ===
 
