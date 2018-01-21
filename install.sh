@@ -283,6 +283,7 @@ binutils_install() {
     fi
     rm -rf gold.binutils${GCCSVN_VER}
     mkdir -p gold.binutils${GCCSVN_VER}
+    echo "cd ${DIR_TMP}/gold.binutils${GCCSVN_VER}" | tee "${SCRIPT_DIR}/binutils-gcc${GCCSVN_VER}-fpm-cmd"
     cd gold.binutils${GCCSVN_VER}
     ../binutils-${BINUTILS_VER}/configure --prefix="$GCC_PREFIX" --enable-lto --enable-gold --enable-plugins --disable-nls --disable-werror
     time make${MAKETHREADS} all-gold
@@ -345,7 +346,7 @@ binutils_install() {
 
         echo -e "* $(date +"%a %b %d %Y") George Liu <centminmod.com> $BINUTILS_VER\n - Binutils $BINUTILS_VER for centminmod.com LEMP stack installs" > "binutils-gcc${GCCSVN_VER}-changelog"
 
-        echo "fpm -f -s dir -t rpm -n binutils-gcc${GCCSVN_VER} -v $BINUTILS_VER $FPMCOMPRESS_OPT --rpm-changelog \"binutils-gcc${GCCSVN_VER}-changelog\" --rpm-summary \"binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stack installs\" --rpm-dist ${DISTTAG}  -m \"<centminmod.com>\" --description \"binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stacks\" --url https://centminmod.com --rpm-autoreqprov -p $DIR_TMP -C $BINUTIL_RPMINSTALLDIR" | tee "${SCRIPT_DIR}/binutils-gcc${GCCSVN_VER}-fpm-cmd"
+        echo "fpm -f -s dir -t rpm -n binutils-gcc${GCCSVN_VER} -v $BINUTILS_VER $FPMCOMPRESS_OPT --rpm-changelog \"binutils-gcc${GCCSVN_VER}-changelog\" --rpm-summary \"binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stack installs\" --rpm-dist ${DISTTAG}  -m \"<centminmod.com>\" --description \"binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stacks\" --url https://centminmod.com --rpm-autoreqprov -p $DIR_TMP -C $BINUTIL_RPMINSTALLDIR" | tee -a "${SCRIPT_DIR}/binutils-gcc${GCCSVN_VER}-fpm-cmd"
         time fpm -f -s dir -t rpm -n binutils-gcc${GCCSVN_VER} -v $BINUTILS_VER $FPMCOMPRESS_OPT --rpm-changelog "binutils-gcc${GCCSVN_VER}-changelog" --rpm-summary "binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stack installs" --rpm-dist ${DISTTAG}  -m "<centminmod.com>" --description "binutils-gcc${GCCSVN_VER} for centminmod.com LEMP stacks" --url https://centminmod.com --rpm-autoreqprov -p $DIR_TMP -C $BINUTIL_RPMINSTALLDIR
 
         # check provides and requires
@@ -500,6 +501,7 @@ install_gcc() {
         fi
         echo "mkdir -p test"
         mkdir -p test
+        echo "cd ${DIR}${downloadtar_dirname}/test" | tee "${SCRIPT_DIR}/gcc${GCCSVN_VER}${PGOTAG}-fpm-cmd"
         cd test
         GCC_PREFIX="/opt/${downloadtar_dirname}"
         if [[ "$CCACHE" != [yY] ]]; then
@@ -592,7 +594,7 @@ EOF
 
         echo -e "* $(date +"%a %b %d %Y") George Liu <centminmod.com> ${GCCSVN_VER}\n - GCC ${GCCSVN_VER} for centminmod.com LEMP stack installs" > "gcc${GCCSVN_VER}-changelog"
 
-        echo "fpm -f -s dir -t rpm -n gcc${GCCSVN_VER}${PGOTAG} -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog \"gcc${GCCSVN_VER}-changelog\" --rpm-summary \"gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stack installs\" --after-install symlink.sh --before-remove remove_symlink.sh --rpm-dist ${DISTTAG}  -m \"<centminmod.com>\"  --description \"gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stacks\" --url https://centminmod.com --rpm-autoreqprov -p $DIR_TMP -C $GCC_RPMINSTALLDIR" | tee "${SCRIPT_DIR}/gcc${GCCSVN_VER}${PGOTAG}-fpm-cmd"
+        echo "fpm -f -s dir -t rpm -n gcc${GCCSVN_VER}${PGOTAG} -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog \"gcc${GCCSVN_VER}-changelog\" --rpm-summary \"gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stack installs\" --after-install symlink.sh --before-remove remove_symlink.sh --rpm-dist ${DISTTAG}  -m \"<centminmod.com>\"  --description \"gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stacks\" --url https://centminmod.com --rpm-autoreqprov -p $DIR_TMP -C $GCC_RPMINSTALLDIR" | tee -a "${SCRIPT_DIR}/gcc${GCCSVN_VER}${PGOTAG}-fpm-cmd"
         time fpm -f -s dir -t rpm -n gcc${GCCSVN_VER}${PGOTAG} -v $GCCFPM_VER $FPMCOMPRESS_OPT --rpm-changelog "gcc${GCCSVN_VER}-changelog" --rpm-summary "gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stack installs" --after-install symlink.sh --before-remove remove_symlink.sh --rpm-dist ${DISTTAG}  -m "<centminmod.com>"  --description "gcc${GCCSVN_VER}${PGOTAG} for centminmod.com LEMP stacks" --url https://centminmod.com --rpm-autoreqprov -p $DIR_TMP -C $GCC_RPMINSTALLDIR
 
         # check provides and requires
