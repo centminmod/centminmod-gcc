@@ -75,6 +75,12 @@ GCC 8 Usage
 source /opt/gcc8/enable
 ```
 
+or directly without symlink alias
+
+```
+source /opt/gcc-8-20180111/enable
+```
+
 ```
 ld -v
 GNU ld (GNU Binutils) 2.29.1
@@ -102,6 +108,12 @@ GCC 7 Usage
 
 ```
 source /opt/gcc7/enable
+```
+
+or directly without symlink alias
+
+```
+source /opt/gcc-7-20180111/enable
 ```
 
 ```
