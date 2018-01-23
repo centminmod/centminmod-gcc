@@ -7,7 +7,7 @@
 # https://gist.github.com/centminmod/f825b26676eab0240d3049d2e7d1c688
 # http://wiki.osdev.org/GCC_Cross-Compiler#Binutils
 ################################################
-VER='0.2'
+VER='0.3'
 DT=$(date +"%d%m%y-%H%M%S")
 DIR_TMP='/svr-setup'
 
@@ -155,6 +155,14 @@ fi
 die() {
     echo "error: $@" >&2
     exit 1
+}
+
+tidyup() {
+    # logs older than 5 days will be gzip compressed to save space 
+    if [ -d /root/centminlogs ]; then
+        # find /root/centminlogs -type f -mtime +3 \( -name 'tools-binutils-install_*.log"' -o -name 'tools-gcc-install*.log' \) -exec ls -lah {} \;
+        find /root/centminlogs -type f -mtime +3 \( -name 'tools-binutils-install_*.log"' -o -name 'tools-gcc-install*.log' \) -exec gzip -9 {} \;
+    fi
 }
 
 download_prereq() {
@@ -712,6 +720,7 @@ case "$1" in
             fpm_install
             binutils_install
             install_gcc
+            tidyup
             # postfixsetup
         } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             endtime=$(TZ=UTC date +%s.%N)
@@ -726,6 +735,7 @@ case "$1" in
         {
             fpm_install
             binutils_install
+            tidyup
             # postfixsetup
         } 2>&1 | tee "${CENTMINLOGDIR}/tools-binutils-install${PGOTAG}_${DT}.log"
             endtime=$(TZ=UTC date +%s.%N)
@@ -740,6 +750,7 @@ case "$1" in
         {
             fpm_install
             binutils_install
+            tidyup
             # postfixsetup
         } 2>&1 | tee "${CENTMINLOGDIR}/tools-binutils-install${PGOTAG}_${DT}.log"
             endtime=$(TZ=UTC date +%s.%N)
@@ -755,6 +766,7 @@ case "$1" in
             fpm_install
             binutils_install
             install_gcc
+            tidyup
             # postfixsetup
         } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             endtime=$(TZ=UTC date +%s.%N)
@@ -770,6 +782,7 @@ case "$1" in
             fpm_install
             binutils_install
             install_gcc
+            tidyup
             # postfixsetup
         } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             endtime=$(TZ=UTC date +%s.%N)
@@ -787,6 +800,7 @@ case "$1" in
             fpm_install
             binutils_install
             install_gcc
+            tidyup
             # postfixsetup
         } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             endtime=$(TZ=UTC date +%s.%N)
@@ -804,6 +818,7 @@ case "$1" in
             fpm_install
             binutils_install
             install_gcc
+            tidyup
             # postfixsetup
         } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             endtime=$(TZ=UTC date +%s.%N)
@@ -817,6 +832,7 @@ case "$1" in
         {
             fpm_install
             install_gcc
+            tidyup
             # postfixsetup
         } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             endtime=$(TZ=UTC date +%s.%N)
@@ -831,6 +847,7 @@ case "$1" in
         {
             fpm_install
             install_gcc
+            tidyup
             # postfixsetup
         } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             endtime=$(TZ=UTC date +%s.%N)
@@ -845,6 +862,7 @@ case "$1" in
         {
             fpm_install
             install_gcc
+            tidyup
             # postfixsetup
         } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             endtime=$(TZ=UTC date +%s.%N)
@@ -861,6 +879,7 @@ case "$1" in
         {
             fpm_install
             install_gcc
+            tidyup
             # postfixsetup
         } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             endtime=$(TZ=UTC date +%s.%N)
@@ -877,6 +896,7 @@ case "$1" in
         {
             fpm_install
             install_gcc
+            tidyup
             # postfixsetup
         } 2>&1 | tee "${CENTMINLOGDIR}/tools-gcc-install${PGOTAG}_${DT}.log"
             endtime=$(TZ=UTC date +%s.%N)
