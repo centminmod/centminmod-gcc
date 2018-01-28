@@ -36,7 +36,7 @@ GCC_GOLD='y'
 # https://gcc.gnu.org/install/build.html
 GCC_PGO='n'
 BOOTCFLAGS='y'
-BINUTILS_VER='2.29.1'
+BINUTILS_VER='2.30'
 
 # GCC Downloads
 GMP_FILE='gmp-6.1.0.tar.bz2'
