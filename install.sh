@@ -172,10 +172,10 @@ download_prereq() {
     rm -rf ${ISL_FILE}
     rm -rf ${MPC_FILE}
     rm -rf ${MPFR_FILE}
-    wget --no-verbose -O ./${GMP_FILE} https://github.com/centminmod/gcc-infrastructure/raw/master/${GMP_FILE}
-    wget --no-verbose -O ./${ISL_FILE} https://github.com/centminmod/gcc-infrastructure/raw/master/${ISL_FILE}
-    wget --no-verbose -O ./${MPC_FILE} https://github.com/centminmod/gcc-infrastructure/raw/master/${MPC_FILE}
-    wget --no-verbose -O ./${MPFR_FILE} https://github.com/centminmod/gcc-infrastructure/raw/master/${MPFR_FILE}
+    wget -4 --no-verbose -O ./${GMP_FILE} https://github.com/centminmod/gcc-infrastructure/raw/master/${GMP_FILE}
+    wget -4 --no-verbose -O ./${ISL_FILE} https://github.com/centminmod/gcc-infrastructure/raw/master/${ISL_FILE}
+    wget -4 --no-verbose -O ./${MPC_FILE} https://github.com/centminmod/gcc-infrastructure/raw/master/${MPC_FILE}
+    wget -4 --no-verbose -O ./${MPFR_FILE} https://github.com/centminmod/gcc-infrastructure/raw/master/${MPFR_FILE}
     echo
     ls -lah ${GMP_FILE} ${ISL_FILE} ${MPC_FILE} ${MPFR_FILE}
     echo
@@ -286,7 +286,7 @@ binutils_install() {
 
     cd $DIR_TMP
     if [[ ! -f "binutils-${BINUTILS_VER}.tar.gz" || ! -d "binutils-${BINUTILS_VER}" ]]; then
-        wget -cnv "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.gz"
+        wget -4 -4 -cnv "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.gz"
         tar xvzf "binutils-${BINUTILS_VER}.tar.gz"
     fi
     rm -rf gold.binutils${GCCSVN_VER}
@@ -455,7 +455,7 @@ install_gcc() {
     cd "$DIR_TMP"
     if [[ "$GCC_SVN" = [nN] ]]; then
         rm -rf "gcc-${GCC_VER}*"
-        wget http://www.netgull.com/gcc/releases/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz
+        wget -4 http://www.netgull.com/gcc/releases/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz
         tar xf gcc-${GCC_VER}.tar.xz
         cd "gcc-${GCC_VER}"
         echo "mkdir -p test"
@@ -470,8 +470,8 @@ install_gcc() {
         downloadtar_dirname=$(echo "$downloadtar_name" | sed -e 's|.tar.xz||')
         rm -rf "${downloadtar_dirname}"
         rm -rf "${downloadtar_name}"
-        echo "wget "$GCC_SNAPSHOTSEVEN/${downloadtar_name}""
-        wget "$GCC_SNAPSHOTSEVEN/${downloadtar_name}"
+        echo "wget -4 "$GCC_SNAPSHOTSEVEN/${downloadtar_name}""
+        wget -4 "$GCC_SNAPSHOTSEVEN/${downloadtar_name}"
         echo "tar xf ${downloadtar_name}"
         tar xf "${downloadtar_name}"
         cd "$downloadtar_dirname"
@@ -497,8 +497,8 @@ install_gcc() {
         downloadtar_dirname=$(echo "$downloadtar_name" | sed -e 's|.tar.xz||')
         rm -rf "${downloadtar_dirname}"
         rm -rf "${downloadtar_name}"
-        echo "wget "$GCC_SNAPSHOTEIGHT/${downloadtar_name}""
-        wget "$GCC_SNAPSHOTEIGHT/${downloadtar_name}"
+        echo "wget -4 "$GCC_SNAPSHOTEIGHT/${downloadtar_name}""
+        wget -4 "$GCC_SNAPSHOTEIGHT/${downloadtar_name}"
         echo "tar xf ${downloadtar_name}"
         tar xf "${downloadtar_name}"
         cd "$downloadtar_dirname"
