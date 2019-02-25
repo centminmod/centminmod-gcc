@@ -19,6 +19,12 @@ Usage:
 ./install.sh {install|install7|install8|installpgo7|installpgo8|installgcc|installgcc7|installgcc8|installpgogcc7|installpgogcc8|binutils7|binutils8}
 ```
 
+Build GCC 9 RPM + Binutils RPM Only and `without` installing. If you want to install the RPM too set in `install.sh` the variable `GCC_YUMINSTALL='y'`
+
+```
+./install.sh install9
+```
+
 Build GCC 8 RPM + Binutils RPM Only and `without` installing. If you want to install the RPM too set in `install.sh` the variable `GCC_YUMINSTALL='y'`
 
 ```
@@ -29,6 +35,12 @@ Build GCC 7 RPM + Binutils RPM Only and `without` installing. If you want to ins
 
 ```
 ./install.sh install7
+```
+
+Build GCC 9 RPM only without Binutils RPM and `without` installing. If you want to install the RPM too set in `install.sh` the variable `GCC_YUMINSTALL='y'`
+
+```
+./install.sh installgcc9
 ```
 
 Build GCC 8 RPM only without Binutils RPM and `without` installing. If you want to install the RPM too set in `install.sh` the variable `GCC_YUMINSTALL='y'`
@@ -42,6 +54,13 @@ Build GCC 7 RPM only without Binutils RPM and `without` installing. If you want 
 ```
 ./install.sh installgcc7
 ```
+
+Build GCC 9 RPM only with PGO enabled without Binutils RPM and `without` installing. If you want to install the RPM too set in `install.sh` the variable `GCC_YUMINSTALL='y'`
+
+```
+./install.sh installpgogcc9
+```
+
 
 Build GCC 8 RPM only with PGO enabled without Binutils RPM and `without` installing. If you want to install the RPM too set in `install.sh` the variable `GCC_YUMINSTALL='y'`
 
@@ -58,6 +77,12 @@ Build GCC 7 RPM only with PGO enabled without Binutils RPM and `without` install
 Build Binutils RPM Only without GCC RPM and `without` installing. If you want to install the RPM too set in `install.sh` the variable `GCC_YUMINSTALL='y'`
 
 ```
+./install.sh binutils9
+```
+
+Build Binutils RPM Only without GCC RPM and `without` installing. If you want to install the RPM too set in `install.sh` the variable `GCC_YUMINSTALL='y'`
+
+```
 ./install.sh binutils8
 ```
 
@@ -67,88 +92,84 @@ Build Binutils RPM Only without GCC RPM and `without` installing. If you want to
 ./install.sh binutils7
 ```
 
-GCC 8 Usage
+GCC 9 Usage
 ===
 
-* `/opt/gcc-8-20180608` is symlinked to `/opt/gcc8` for easier reference as the GCC snapshot date timestamped builds increment
-* Using `/opt/gcc8/enable` allows you to set PATH appropriately. Example gcc binary is at `/opt/gcc8/bin/gcc` but with source file enabled, can reference just as `gcc`
+* `/opt/gcc-9-20190224` is symlinked to `/opt/gcc9` for easier reference as the GCC snapshot date timestamped builds increment
+* Using `/opt/gcc9/enable` allows you to set PATH appropriately. Example gcc binary is at `/opt/gcc9/bin/gcc` but with source file enabled, can reference just as `gcc`
 
 ```
-source /opt/gcc8/enable
+source /opt/gcc9/enable
 ```
 
 or directly without symlink alias
 
 ```
-source /opt/gcc-8-20180608/enable
+source /opt/gcc-9-20190224/enable
 ```
 
 ```
 ld -v
-GNU ld (GNU Binutils) 2.30
+GNU ld (GNU Binutils) 2.32
 
 ld.gold -v
-GNU gold (GNU Binutils 2.30) 1.15
+GNU gold (GNU Binutils 2.32) 1.16
 ```
 
 ```
 gcc -v
 Using built-in specs.
 COLLECT_GCC=gcc
-COLLECT_LTO_WRAPPER=/opt/gcc-8-20180608/libexec/gcc/x86_64-redhat-linux/8/lto-wrapper
+COLLECT_LTO_WRAPPER=/opt/gcc-9-20190224/libexec/gcc/x86_64-redhat-linux/9/lto-wrapper
 Target: x86_64-redhat-linux
-Configured with: ../configure --prefix=/opt/gcc-8-20180608 --disable-multilib --enable-bootstrap --enable-plugin --with-gcc-major-version-only --enable-shared --disable-nls --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-install-libiberty --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++ --enable-initfini-array --disable-libgcj --enable-gnu-indirect-function --with-tune=generic --build=x86_64-redhat-linux --enable-lto --enable-gold
+Configured with: ../configure --prefix=/opt/gcc-9-20190224 --disable-multilib --enable-bootstrap --enable-plugin --with-gcc-major-version-only --enable-shared --disable-nls --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-install-libiberty --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++ --enable-initfini-array --disable-libgcj --enable-gnu-indirect-function --with-tune=generic --build=x86_64-redhat-linux --enable-lto --enable-gold
 Thread model: posix
-gcc version 8.1.1 20180608 (GCC)
+gcc version 9.0.1 20190224 (experimental) (GCC) 
 ```
 
 
 ```
-yum info binutils-gcc8 -q
-IInstalled Packages
-Name        : binutils-gcc8
-Arch        : x86_64
-Version     : 2.30
-Release     : 1.el7
-Size        : 48 M
-Repo        : installed
-Summary     : binutils-gcc8 for centminmod.com LEMP stack installs
-URL         : https://centminmod.com
-License     : unknown
-Description : binutils-gcc8 for centminmod.com LEMP stacks
-
-
-* Fri Jun 15 2018 George Liu <centminmod.com> 2.30
-- Binutils 2.30 for centminmod.com LEMP stack installs
-```
-
-```
-yum info gcc8-pgo -q
+yum info binutils-gcc9 -q
 Installed Packages
-Name        : gcc8-pgo
+Name        : binutils-gcc9
 Arch        : x86_64
-Version     : 8.1.0
+Version     : 2.32
 Release     : 1.el7
-Size        : 301 M
+Size        : 47 M
 Repo        : installed
-Summary     : gcc8-pgo for centminmod.com LEMP stack installs
+Summary     : binutils-gcc9 for centminmod.com LEMP stack installs
 URL         : https://centminmod.com
 License     : unknown
-Description : gcc8-pgo for centminmod.com LEMP stacks
+Description : binutils-gcc9 for centminmod.com LEMP stacks
+```
+
+```
+yum info gcc9 -q
+Installed Packages
+Name        : gcc9
+Arch        : x86_64
+Version     : 9.0.1
+Release     : 1.el7
+Size        : 320 M
+Repo        : installed
+Summary     : gcc9 for centminmod.com LEMP stack installs
+URL         : https://centminmod.com
+License     : unknown
+Description : gcc9 for centminmod.com LEMP stacks
 
 
-* Fri Jun 15 2018 George Liu <centminmod.com> 8
+* Mon Feb 25 2019 George Liu <centminmod.com> 8
 - GCC 8 for centminmod.com LEMP stack installs
 ```
 
 ```
-rpm -qp --provides /svr-setup/binutils-gcc8-2.30-1.el7.x86_64.rpm
-binutils-gcc8 = 2.30-1.el7
-binutils-gcc8(x86-64) = 2.30-1.el7
+rpm -qp --provides /svr-setup/binutils-gcc9-2.32-1.el7.x86_64.rpm
+binutils-gcc9 = 2.32-1.el7
+binutils-gcc9(x86-64) = 2.32-1.el7
 ```
 
 ```
-rpm -qp --requires /svr-setup/binutils-gcc8-2.30-1.el7.x86_64.rpm
+rpm -qp --requires /svr-setup/binutils-gcc9-2.32-1.el7.x86_64.rpm
 ld-linux-x86-64.so.2()(64bit)
 ld-linux-x86-64.so.2(GLIBC_2.3)(64bit)
 libc.so.6()(64bit)
@@ -161,6 +182,9 @@ libc.so.6(GLIBC_2.4)(64bit)
 libdl.so.2()(64bit)
 libdl.so.2(GLIBC_2.2.5)(64bit)
 libm.so.6()(64bit)
+libpthread.so.0()(64bit)
+libpthread.so.0(GLIBC_2.2.5)(64bit)
+libpthread.so.0(GLIBC_2.3.2)(64bit)
 rpmlib(CompressedFileNames) <= 3.0.4-1
 rpmlib(PartialHardlinkSets) <= 4.0.4-1
 rpmlib(PayloadFilesHavePrefix) <= 4.0-1
@@ -169,9 +193,201 @@ rpmlib(PayloadIsXz) <= 5.2-1
 ```
 
 ```
-rpm -qp --provides "/svr-setup/gcc8-pgo-8.1.0-1.el7.x86_64.rpm"
-gcc8-pgo = 8.1.0-1.el7
-gcc8-pgo(x86-64) = 8.1.0-1.el7
+rpm -qp --provides "/svr-setup/gcc9-9.0.1-1.el7.x86_64.rpm"
+gcc9 = 9.0.1-1.el7
+gcc9(x86-64) = 9.0.1-1.el7
+libasan.so.5()(64bit)
+libatomic.so.1()(64bit)
+libatomic.so.1(LIBATOMIC_1.0)(64bit)
+libatomic.so.1(LIBATOMIC_1.1)(64bit)
+libatomic.so.1(LIBATOMIC_1.2)(64bit)
+libcc1.so.0()(64bit)
+libcc1plugin.so.0()(64bit)
+libcp1plugin.so.0()(64bit)
+libgomp.so.1()(64bit)
+libgomp.so.1(GOACC_2.0)(64bit)
+libgomp.so.1(GOACC_2.0.1)(64bit)
+libgomp.so.1(GOMP_1.0)(64bit)
+libgomp.so.1(GOMP_2.0)(64bit)
+libgomp.so.1(GOMP_3.0)(64bit)
+libgomp.so.1(GOMP_4.0)(64bit)
+libgomp.so.1(GOMP_4.0.1)(64bit)
+libgomp.so.1(GOMP_4.5)(64bit)
+libgomp.so.1(GOMP_5.0)(64bit)
+libgomp.so.1(GOMP_PLUGIN_1.0)(64bit)
+libgomp.so.1(GOMP_PLUGIN_1.1)(64bit)
+libgomp.so.1(GOMP_PLUGIN_1.2)(64bit)
+libgomp.so.1(OACC_2.0)(64bit)
+libgomp.so.1(OACC_2.0.1)(64bit)
+libgomp.so.1(OACC_2.5)(64bit)
+libgomp.so.1(OMP_1.0)(64bit)
+libgomp.so.1(OMP_2.0)(64bit)
+libgomp.so.1(OMP_3.0)(64bit)
+libgomp.so.1(OMP_3.1)(64bit)
+libgomp.so.1(OMP_4.0)(64bit)
+libgomp.so.1(OMP_4.5)(64bit)
+libgomp.so.1(OMP_5.0)(64bit)
+libitm.so.1()(64bit)
+libitm.so.1(LIBITM_1.0)(64bit)
+libitm.so.1(LIBITM_1.1)(64bit)
+liblsan.so.0()(64bit)
+liblto_plugin.so.0()(64bit)
+libquadmath.so.0()(64bit)
+libquadmath.so.0(QUADMATH_1.0)(64bit)
+libquadmath.so.0(QUADMATH_1.1)(64bit)
+libquadmath.so.0(QUADMATH_1.2)(64bit)
+libssp.so.0()(64bit)
+libssp.so.0(LIBSSP_1.0)(64bit)
+libstdc++.so.6()(64bit)
+libstdc++.so.6(CXXABI_1.3)(64bit)
+libstdc++.so.6(CXXABI_1.3.1)(64bit)
+libstdc++.so.6(CXXABI_1.3.10)(64bit)
+libstdc++.so.6(CXXABI_1.3.11)(64bit)
+libstdc++.so.6(CXXABI_1.3.12)(64bit)
+libstdc++.so.6(CXXABI_1.3.2)(64bit)
+libstdc++.so.6(CXXABI_1.3.3)(64bit)
+libstdc++.so.6(CXXABI_1.3.4)(64bit)
+libstdc++.so.6(CXXABI_1.3.5)(64bit)
+libstdc++.so.6(CXXABI_1.3.6)(64bit)
+libstdc++.so.6(CXXABI_1.3.7)(64bit)
+libstdc++.so.6(CXXABI_1.3.8)(64bit)
+libstdc++.so.6(CXXABI_1.3.9)(64bit)
+libstdc++.so.6(CXXABI_FLOAT128)(64bit)
+libstdc++.so.6(CXXABI_TM_1)(64bit)
+libstdc++.so.6(GLIBCXX_3.4)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.1)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.10)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.11)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.12)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.13)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.14)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.15)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.16)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.17)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.18)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.19)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.2)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.20)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.21)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.22)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.23)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.24)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.25)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.26)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.3)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.4)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.5)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.6)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.7)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.8)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.9)(64bit)
+libtsan.so.0()(64bit)
+libubsan.so.1()(64bit)
+```
+
+GCC 8 Usage
+===
+
+* `/opt/gcc-8-20190222` is symlinked to `/opt/gcc8` for easier reference as the GCC snapshot date timestamped builds increment
+* Using `/opt/gcc8/enable` allows you to set PATH appropriately. Example gcc binary is at `/opt/gcc8/bin/gcc` but with source file enabled, can reference just as `gcc`
+
+```
+source /opt/gcc8/enable
+```
+
+or directly without symlink alias
+
+```
+source /opt/gcc-8-20190222/enable
+```
+
+```
+ld -v
+GNU ld (GNU Binutils) 2.31
+
+ld.gold -v
+GNU gold (GNU Binutils 2.31) 1.16
+```
+
+```
+gcc -v
+Using built-in specs.
+COLLECT_GCC=gcc
+COLLECT_LTO_WRAPPER=/opt/gcc-8-20190222/libexec/gcc/x86_64-redhat-linux/8/lto-wrapper
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/opt/gcc-8-20190222 --disable-multilib --enable-bootstrap --enable-plugin --with-gcc-major-version-only --enable-shared --disable-nls --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-install-libiberty --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++ --enable-initfini-array --disable-libgcj --enable-gnu-indirect-function --with-tune=generic --build=x86_64-redhat-linux --enable-lto --enable-gold
+Thread model: posix
+gcc version 8.3.1 20190222 (GCC) 
+```
+
+
+```
+yum info binutils-gcc8 -q
+Name        : binutils-gcc8
+Arch        : x86_64
+Version     : 2.31
+Release     : 1.el7
+Size        : 47 M
+Repo        : installed
+Summary     : binutils-gcc8 for centminmod.com LEMP stack installs
+URL         : https://centminmod.com
+License     : unknown
+Description : binutils-gcc8 for centminmod.com LEMP stacks
+```
+
+```
+yum info gcc8-pgo -q
+Installed Packages
+Name        : gcc8-pgo
+Arch        : x86_64
+Version     : 8.3.1
+Release     : 1.el7
+Size        : 302 M
+Repo        : installed
+Summary     : gcc8-pgo for centminmod.com LEMP stack installs
+URL         : https://centminmod.com
+License     : unknown
+Description : gcc8-pgo for centminmod.com LEMP stacks
+
+
+* Mon Feb 25 2019 George Liu <centminmod.com> 8
+- GCC 8 for centminmod.com LEMP stack installs
+```
+
+```
+rpm -qp --provides /svr-setup/binutils-gcc8-2.31-1.el7.x86_64.rpm
+binutils-gcc8 = 2.31-1.el7
+binutils-gcc8(x86-64) = 2.31-1.el7
+```
+
+```
+rpm -qp --requires /svr-setup/binutils-gcc8-2.31-1.el7.x86_64.rpm
+ld-linux-x86-64.so.2()(64bit)
+ld-linux-x86-64.so.2(GLIBC_2.3)(64bit)
+libc.so.6()(64bit)
+libc.so.6(GLIBC_2.10)(64bit)
+libc.so.6(GLIBC_2.11)(64bit)
+libc.so.6(GLIBC_2.14)(64bit)
+libc.so.6(GLIBC_2.2.5)(64bit)
+libc.so.6(GLIBC_2.3)(64bit)
+libc.so.6(GLIBC_2.4)(64bit)
+libdl.so.2()(64bit)
+libdl.so.2(GLIBC_2.2.5)(64bit)
+libm.so.6()(64bit)
+libpthread.so.0()(64bit)
+libpthread.so.0(GLIBC_2.2.5)(64bit)
+libpthread.so.0(GLIBC_2.3.2)(64bit)
+rpmlib(CompressedFileNames) <= 3.0.4-1
+rpmlib(PartialHardlinkSets) <= 4.0.4-1
+rpmlib(PayloadFilesHavePrefix) <= 4.0-1
+rtld(GNU_HASH)
+rpmlib(PayloadIsXz) <= 5.2-1
+```
+
+```
+rpm -qp --provides "/svr-setup/gcc8-pgo-8.3.1-1.el7.x86_64.rpm"
+gcc8-pgo = 8.3.1-1.el7
+gcc8-pgo(x86-64) = 8.3.1-1.el7
 libasan.so.5()(64bit)
 libatomic.so.1()(64bit)
 libatomic.so.1(LIBATOMIC_1.0)(64bit)
@@ -260,7 +476,7 @@ libubsan.so.1()(64bit)
 ```
 
 ```
-rpm -qp --requires "/svr-setup/gcc8-pgo-8.1.0-1.el7.x86_64.rpm"
+rpm -qp --requires "/svr-setup/gcc8-pgo-8.3.1-1.el7.x86_64.rpm"
 /bin/sh
 /bin/sh
 /bin/sh
