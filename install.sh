@@ -7,7 +7,7 @@
 # https://gist.github.com/centminmod/f825b26676eab0240d3049d2e7d1c688
 # http://wiki.osdev.org/GCC_Cross-Compiler#Binutils
 ################################################
-VER='1.1'
+VER='1.2'
 DT=$(date +"%d%m%y-%H%M%S")
 DIR_TMP='/svr-setup'
 
@@ -53,8 +53,8 @@ GCC_SNAPSHOTSEVEN='http://www.netgull.com/gcc/snapshots/LATEST-7/'
 GCC_SNAPSHOTEIGHT='http://www.netgull.com/gcc/snapshots/LATEST-8/'
 #GCC_SNAPSHOTEIGHT='http://www.netgull.com/gcc/releases/gcc-8.2.0/'
 #GCC_SNAPSHOTNINE='http://www.netgull.com/gcc/snapshots/LATEST-9/'
-GCC_SNAPSHOTNINE='https://gnu.freemirror.org/gnu/gcc/gcc-9.2.0/'
-#GCC_SNAPSHOTNINE='http://mirrors.concertpass.com/gcc/releases/gcc-9.2.0/'
+#GCC_SNAPSHOTNINE='http://mirror.koddos.net/gcc/snapshots/LATEST-9/'
+GCC_SNAPSHOTNINE='http://mirrors.concertpass.com/gcc/snapshots/LATEST-9/'
 GCC_COMPILEOPTS='--enable-bootstrap --enable-plugin --with-gcc-major-version-only --enable-shared --disable-nls --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-install-libiberty --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++ --enable-initfini-array --disable-libgcj --enable-gnu-indirect-function --with-tune=generic --build=x86_64-redhat-linux'
 SCRIPT_DIR=$(readlink -f $(dirname ${BASH_SOURCE[0]}))
 ################################################

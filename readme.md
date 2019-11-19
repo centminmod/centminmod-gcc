@@ -1,8 +1,8 @@
 GCC 7 & 8 Compiler Scripts
 ===
 
-* GCC 7.x & 8.x compiler & Binutils build scripts for install and creation of RPMs for [CentminMod.com](https://community.centminmod.com/threads/13726/) LEMP stacks
-* GCC 7.x & 8.x snapshots are built from sources at [http://www.netgull.com/gcc/snapshots/LATEST-7/](http://www.netgull.com/gcc/snapshots/LATEST-7/) and [http://www.netgull.com/gcc/snapshots/LATEST-8/](http://www.netgull.com/gcc/snapshots/LATEST-8/) respectively using CentOS SCL devtoolset-7 provided GCC 7.2.1 compiler.
+* GCC 7.x, 8.x and 9.x compiler & Binutils build scripts for install and creation of RPMs for [CentminMod.com](https://community.centminmod.com/threads/13726/) LEMP stacks
+* GCC 7.x, 8.x and 9.x snapshots are built from sources at [http://www.netgull.com/gcc/snapshots/LATEST-7/](http://www.netgull.com/gcc/snapshots/LATEST-7/) and [http://www.netgull.com/gcc/snapshots/LATEST-8/](http://www.netgull.com/gcc/snapshots/LATEST-8/) respectively using CentOS SCL devtoolset-7 provided GCC 7.2.1 compiler.
 * CentOS 7.x only
 * Optional support for Profile Guided Optimization based GCC builds for ~7-10% better performance for resulting binaries built
 * GCC 8 as at 20180114 snapshot has [added support for new GCC Retpoline patches](https://community.centminmod.com/posts/58340/) to support new options for `-mindirect-branch`, `-mindirect-return` and `-mindirect-branch-register` to address [Spectre variant 2 vulnerabilities](https://community.centminmod.com/threads/linux-kernel-security-updates-for-spectre-meltdown-vulnerabilities.13648/).
@@ -95,7 +95,7 @@ Build Binutils RPM Only without GCC RPM and `without` installing. If you want to
 GCC 9 Usage
 ===
 
-* `/opt/gcc-9-20190224` is symlinked to `/opt/gcc9` for easier reference as the GCC snapshot date timestamped builds increment
+* `/opt/gcc-9-20191102` is symlinked to `/opt/gcc9` for easier reference as the GCC snapshot date timestamped builds increment
 * Using `/opt/gcc9/enable` allows you to set PATH appropriately. Example gcc binary is at `/opt/gcc9/bin/gcc` but with source file enabled, can reference just as `gcc`
 
 ```
@@ -105,26 +105,26 @@ source /opt/gcc9/enable
 or directly without symlink alias
 
 ```
-source /opt/gcc-9-20190224/enable
+source /opt/gcc-9-20191102/enable
 ```
 
 ```
 ld -v
-GNU ld (GNU Binutils) 2.32
+GNU ld (GNU Binutils) 2.33.1
 
 ld.gold -v
-GNU gold (GNU Binutils 2.32) 1.16
+GNU gold (GNU Binutils 2.33.1) 1.16
 ```
 
 ```
 gcc -v
 Using built-in specs.
 COLLECT_GCC=gcc
-COLLECT_LTO_WRAPPER=/opt/gcc-9-20190224/libexec/gcc/x86_64-redhat-linux/9/lto-wrapper
+COLLECT_LTO_WRAPPER=/opt/gcc-9-20191102/libexec/gcc/x86_64-redhat-linux/9/lto-wrapper
 Target: x86_64-redhat-linux
-Configured with: ../configure --prefix=/opt/gcc-9-20190224 --disable-multilib --enable-bootstrap --enable-plugin --with-gcc-major-version-only --enable-shared --disable-nls --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-install-libiberty --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++ --enable-initfini-array --disable-libgcj --enable-gnu-indirect-function --with-tune=generic --build=x86_64-redhat-linux --enable-lto --enable-gold
+Configured with: ../configure --prefix=/opt/gcc-9-20191102 --disable-multilib --enable-bootstrap --enable-plugin --with-gcc-major-version-only --enable-shared --disable-nls --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-install-libiberty --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++ --enable-initfini-array --disable-libgcj --enable-gnu-indirect-function --with-tune=generic --build=x86_64-redhat-linux --enable-gold
 Thread model: posix
-gcc version 9.0.1 20190224 (experimental) (GCC) 
+gcc version 9.2.1 20191102 (GCC)
 ```
 
 
@@ -133,10 +133,11 @@ yum info binutils-gcc9 -q
 Installed Packages
 Name        : binutils-gcc9
 Arch        : x86_64
-Version     : 2.32
+Version     : 2.33.1
 Release     : 1.el7
-Size        : 47 M
+Size        : 46 M
 Repo        : installed
+From repo   : /binutils-gcc9-2.33.1-1.el7.x86_64
 Summary     : binutils-gcc9 for centminmod.com LEMP stack installs
 URL         : https://centminmod.com
 License     : unknown
@@ -148,30 +149,25 @@ yum info gcc9 -q
 Installed Packages
 Name        : gcc9
 Arch        : x86_64
-Version     : 9.0.1
+Version     : 9.2.1
 Release     : 1.el7
-Size        : 320 M
+Size        : 366 M
 Repo        : installed
+From repo   : /gcc9-9.2.1-1.el7.x86_64
 Summary     : gcc9 for centminmod.com LEMP stack installs
 URL         : https://centminmod.com
 License     : unknown
 Description : gcc9 for centminmod.com LEMP stacks
-
-
-* Mon Feb 25 2019 George Liu <centminmod.com> 8
-- GCC 8 for centminmod.com LEMP stack installs
 ```
 
 ```
-rpm -qp --provides /svr-setup/binutils-gcc9-2.32-1.el7.x86_64.rpm
-binutils-gcc9 = 2.32-1.el7
-binutils-gcc9(x86-64) = 2.32-1.el7
+rpm -qp --provides /svr-setup/binutils-gcc9-2.33.1-1.el7.x86_64.rpm 
+binutils-gcc9 = 2.33.1-1.el7
+binutils-gcc9(x86-64) = 2.33.1-1.el7
 ```
 
 ```
-rpm -qp --requires /svr-setup/binutils-gcc9-2.32-1.el7.x86_64.rpm
-ld-linux-x86-64.so.2()(64bit)
-ld-linux-x86-64.so.2(GLIBC_2.3)(64bit)
+rpm -qp --requires /svr-setup/binutils-gcc9-2.33.1-1.el7.x86_64.rpm
 libc.so.6()(64bit)
 libc.so.6(GLIBC_2.10)(64bit)
 libc.so.6(GLIBC_2.11)(64bit)
@@ -179,12 +175,22 @@ libc.so.6(GLIBC_2.14)(64bit)
 libc.so.6(GLIBC_2.2.5)(64bit)
 libc.so.6(GLIBC_2.3)(64bit)
 libc.so.6(GLIBC_2.4)(64bit)
+libc.so.6(GLIBC_2.8)(64bit)
 libdl.so.2()(64bit)
 libdl.so.2(GLIBC_2.2.5)(64bit)
+libgcc_s.so.1()(64bit)
+libgcc_s.so.1(GCC_3.0)(64bit)
 libm.so.6()(64bit)
 libpthread.so.0()(64bit)
 libpthread.so.0(GLIBC_2.2.5)(64bit)
 libpthread.so.0(GLIBC_2.3.2)(64bit)
+libstdc++.so.6()(64bit)
+libstdc++.so.6(CXXABI_1.3)(64bit)
+libstdc++.so.6(CXXABI_1.3.5)(64bit)
+libstdc++.so.6(GLIBCXX_3.4)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.11)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.15)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.18)(64bit)
 rpmlib(CompressedFileNames) <= 3.0.4-1
 rpmlib(PartialHardlinkSets) <= 4.0.4-1
 rpmlib(PayloadFilesHavePrefix) <= 4.0-1
@@ -193,9 +199,9 @@ rpmlib(PayloadIsXz) <= 5.2-1
 ```
 
 ```
-rpm -qp --provides "/svr-setup/gcc9-9.0.1-1.el7.x86_64.rpm"
-gcc9 = 9.0.1-1.el7
-gcc9(x86-64) = 9.0.1-1.el7
+rpm -qp --provides "/svr-setup/gcc9-9.2.1-1.el7.x86_64.rpm"
+gcc9 = 9.2.1-1.el7
+gcc9(x86-64) = 9.2.1-1.el7
 libasan.so.5()(64bit)
 libatomic.so.1()(64bit)
 libatomic.so.1(LIBATOMIC_1.0)(64bit)
@@ -274,6 +280,8 @@ libstdc++.so.6(GLIBCXX_3.4.23)(64bit)
 libstdc++.so.6(GLIBCXX_3.4.24)(64bit)
 libstdc++.so.6(GLIBCXX_3.4.25)(64bit)
 libstdc++.so.6(GLIBCXX_3.4.26)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.27)(64bit)
+libstdc++.so.6(GLIBCXX_3.4.28)(64bit)
 libstdc++.so.6(GLIBCXX_3.4.3)(64bit)
 libstdc++.so.6(GLIBCXX_3.4.4)(64bit)
 libstdc++.so.6(GLIBCXX_3.4.5)(64bit)
