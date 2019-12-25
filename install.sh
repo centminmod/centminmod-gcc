@@ -7,7 +7,7 @@
 # https://gist.github.com/centminmod/f825b26676eab0240d3049d2e7d1c688
 # http://wiki.osdev.org/GCC_Cross-Compiler#Binutils
 ################################################
-VER='1.2'
+VER='1.3'
 DT=$(date +"%d%m%y-%H%M%S")
 DIR_TMP='/svr-setup'
 
@@ -20,9 +20,9 @@ RPMSAVE_PATH="$DIR_TMP"
 GCC_YUMINSTALL='n'
 
 # SVN GCC 7 or 8 or 9
-GCCSVN_VER='8'
+GCCSVN_VER='9'
 GCC_SVN='y'
-GCC_VER='7.3.1'
+GCC_VER='9.2.1'
 GCC_PREFIX="/opt/gcc-${GCC_VER}"
 # download from ftp://gcc.gnu.org/pub/gcc/infrastructure/
 # or via wget code for more reliability as
@@ -39,10 +39,10 @@ BOOTCFLAGS='y'
 BINUTILS_VER='2.33.1'
 
 # GCC Downloads
-GMP_FILE='gmp-6.1.0.tar.bz2'
-ISL_FILE='isl-0.18.tar.bz2'
-MPC_FILE='mpc-1.0.3.tar.gz'
-MPFR_FILE='mpfr-3.1.4.tar.bz2'
+GMP_FILE='gmp-6.1.2.tar.bz2'
+ISL_FILE='isl-0.22.tar.bz2'
+MPC_FILE='mpc-1.1.0.tar.gz'
+MPFR_FILE='mpfr-4.0.2.tar.bz2'
 
 CLANG_FOUR='n'
 OPT_LEVEL=-O2
