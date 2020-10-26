@@ -1,3 +1,7 @@
+# Disclaimer
+
+There is no support or guarantees when using the provided scripts. If you break your operating system, the only remedy is to re-install your operating system and start fresh again. Use at your own risk and yes there are risks. These scripts are no maintained or supported for GCC 7, 8, 9 after CentOS SCL Yum repos are available which they are available now.
+
 GCC 7 & 8 Compiler Scripts
 ===
 
